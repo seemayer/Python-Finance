@@ -1,11 +1,16 @@
+
+
 import pandas as pd
 import yfinance as yf
 
-symbol = 'MSFT SPY'
-interval = '1mo'
-period = "2y"
+def get_data(symbol):
 
-# load data and convert date
-df = yf.download(symbol,period=period, interval = interval)
+  #symbol = 'GOOG SPY'
+  interval = '1mo'
+  period = "2y"
 
-df.to_csv(symbol + ".csv")
+  # load data and convert date
+  df = yf.download(symbol,period=period, interval = interval)
+
+  df.to_csv("data/" + symbol + ".csv")
+  return
