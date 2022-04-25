@@ -16,8 +16,9 @@ for symbol in l1:
   #caculate indicators for each ticker
   
   #ai.ema(df,100)
-  ai.macd(df)
-  ai.macd_crossover(df)
+  #ai.macd(df)
+  #ai.macd_crossover(df)
+  ai.elder_impulse(df)
   
   
   
@@ -31,5 +32,5 @@ for symbol in l1:
 #plot chart
 
 
-plt.plot_chart('GOOG', '1d')
+#plt.plot_chart('GOOG', '1d')
 

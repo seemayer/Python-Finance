@@ -18,3 +18,27 @@ def macd_crossover(df):
     
   # 2 represents cross above, -2 cross below
   df['crossover'] = np.sign(df.macd_diff).diff()
+
+def elder_impulse(df):
+  macd(df) #requires macd columns to be added to df
+  ema(df,22) #requires ema
+
+  #https://www.dataquest.io/blog/tutorial-add-column-pandas-dataframe-based-on-if-else-condition/
+  # create a list of our conditions
+  conditions = [
+      (df.macd_diff.diff().gt(0) & df['22EMA'].diff().gt(0)), #green
+      (df.macd_diff.diff().lt(0) & df['22EMA'].diff().lt(0)), #red
+      (df.macd_diff.diff().gt(0) & df['22EMA'].diff().lt(0)), #blue
+      (df.macd_diff.diff().lt(0) & df['22EMA'].diff().gt(0))  #blue
+      ]
+  
+  # create a list of the values we want to assign for each condition
+  values = ['green', 'red', 'blue', 'blue']
+  
+  # create a new column and use np.select to assign values to it using our lists as arguments
+  df['impulse'] = np.select(conditions, values)
+  
+  # display updated DataFrame
+  #df.head()
+      
+  
