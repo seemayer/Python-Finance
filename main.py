@@ -29,5 +29,7 @@ for symbol in l1:
 #screen based on indicators
 
 #plot chart
-plt.plot_chart(symbol)
+
+
+plt.plot_chart('GOOG', '1d')
 

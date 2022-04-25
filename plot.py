@@ -8,7 +8,7 @@ import requests
 from io import StringIO
 from time import time
 
-def plot_chart(symbol):
+def plot_chart(symbol, interval):
 
   df = pd.read_csv('data/' + symbol + '.csv', index_col = False)
   
