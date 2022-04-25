@@ -1,7 +1,7 @@
 import pandas as pd
 import yfinance as yf
 
-symbol = 'SPY'
+symbol = 'MSFT'
 interval = '1mo'
 period = "2y"
 
