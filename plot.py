@@ -8,9 +8,9 @@ import requests
 from io import StringIO
 from time import time
 
-def plot_chart(file):
+def plot_chart(symbol):
 
-  df = pd.read_csv('data/GOOG.csv', index_col = False)
+  df = pd.read_csv('data/' + symbol + '.csv', index_col = False)
   
   df['Date'] = pd.to_datetime(df['Date']).view('int64') # use finplot's internal representation, which is ns
   print(df.tail(6))
