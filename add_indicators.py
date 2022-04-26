@@ -38,6 +38,13 @@ def elder_impulse(df):
   # create a new column and use np.select to assign values to it using our lists as arguments
   df['impulse'] = np.select(conditions, values)
   
+def elder_divergence(df,period):
+  
+  macd(df) #requires macd columns to be added to df
+
+  df["lowestMACD100"] = df['macd_diff'].rolling(period).min()
+  df["condition1"] = df.lowestMACD100 == df.macd_diff
+  
   # display updated DataFrame
   #df.head()
       
