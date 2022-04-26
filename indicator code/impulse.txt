@@ -1,0 +1,90 @@
+MSig = MACD[12,26,9](close) //Today's MACD histogram value
+ratiobull = MSig/lowest[nodays](MSig) //ratio of today's MACD vs lowest MACD
+ratiobear = MSig/highest[nodays](MSig) //ratio of today's MACD vs highest MACD
+
+// Bearish divergence
+
+// if todays MACD is the higest in the last 'nodays' days then trigger condition 1 and reset other conditions
+if MSig=highest[nodays](MSig) then
+c1=-1
+c2=0
+c3=0
+c4=0
+endif
+
+// if condition 1 has been triggered (in a prior period) then if MACD crosses above zero then trigger condition 2
+If c1=-1 and MSig crosses over 0 then
+c2=-2
+//c1=0 // set prior trigger to zero as events must happen in a specific order
+endif
+
+// if both condition 1 & 2 have been triggered in order (in a prior period) then if price hits new highs then trigger condition 3
+If c2=-2 and high=highest[nodays](high) then
+c3=-3
+c2=0 // set prior trigger to zero as events must happen in a specific order
+endif
+
+// if conditions 1, 2 & 3 have been triggered in that order then check if the MACD ticks upwards and issue a signal if so
+If c3=-3 and MSig<MSig[1] then
+//only issue signal if ratio of current MACD height/lowest MACD height is < Factor
+if ratiobear[1]<Factor then
+c4=-4
+c3=0
+else
+c3=0
+endif
+else
+c4=0
+endif
+
+
+
+
+// Bullish divergence
+
+// if todays MACD is the lowest in the last 'nodays' days then trigger condition 1 and reset other conditions
+if MSig=lowest[nodays](MSig) then
+d1=1
+d2=0
+d3=0
+d4=0
+endif
+
+// if condition 1 has been triggered (in a prior period) then if MACD crosses below zero then trigger condition 2
+If d1=1 and MSig crosses under 0 then
+d2=2
+//d1=0 // set prior trigger to zero as events must happen in a specific order
+endif
+
+// if both condition 1 & 2 have been triggered in order (in a prior period) then if price hits new lows and the MACD is at most 1/2 the hight of the recent extreme then trigger condition 3
+If d2=2 and low=lowest[nodays](low) then
+d3=3
+d2=0 // set prior trigger to zero as events must happen in a specific order
+endif
+
+// if conditions 1, 2 & 3 have been triggered in that order then check if the MACD ticks upwards and issue a signal if so
+If d3=3 and MSig>MSig[1] then
+//only issue signal if ratio of current MACD height/lowest MACD height is < Factor
+if ratiobull[1]<Factor then
+d4=4
+d3=0
+else
+d3=0
+endif
+else
+d4=0
+endif
+
+//Draw arrows on price chart
+
+rge = averagetruerange[10](close)
+
+if c4=-4  then
+DRAWARROWDOWN(barindex,high+rge/2)coloured(255,0,255)
+DRAWTEXT("Bearish Divergence", barindex, high+rge/2, Dialog, Standard, 12) COLOURED(255,0,10)
+elsif d4=4 then
+DRAWARROWUP(barindex,low-rge/2)coloured(0,0,255)
+DRAWTEXT("Bullish Divergence", barindex, low-rge/2, Dialog, Standard, 12) COLOURED(0,155,10)
+endif
+
+return d1 as "LowMACD",d2 as "MACDCrossUnder",d3 as "NewLowPrice", d4 as "Uptick",c1 as "HighMACD",c2 as "MACDCrossOver",c3 as "NewHighPrice", c4 as "Downtick"
