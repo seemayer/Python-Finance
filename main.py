@@ -31,6 +31,5 @@ for symbol in l1:
 
 #plot chart
 
-
-#plt.plot_chart('GOOG', '1d')
+plt.plot_chart('SBRY.L', '1d')
 
