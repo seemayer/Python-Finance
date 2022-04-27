@@ -17,9 +17,9 @@ for symbol in l1:
   
   #ai.ema(df,100)
   #ai.macd(df)
-  #ai.macd_crossover(df)
+  #ai.macd_cross(df)
   #ai.elder_impulse(df)
-  ai.elder_divergence(df, period=100)
+  ai.elder_divergence(df, period=40)
   
   
   
