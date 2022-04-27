@@ -1,7 +1,5 @@
 #https://github.com/highfestiva/finplot/wiki/Examples#featured-example
 
-#!/usr/bin/env python3
-
 import finplot as fplt
 import pandas as pd
 import requests
@@ -49,5 +47,3 @@ def plot_chart(symbol, interval):
   fplt.plot(df['Date'], df['marker'], ax=ax, color='#4a5', style='^', legend='dumb mark')
 
   fplt.show()
-
-plot_chart('SBRY.L','1d')

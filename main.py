@@ -3,7 +3,7 @@ import get_stock_data as gd
 import add_indicators as ai
 import plot as plt
 
-#pull tickers from market.csv file
+#pull list of tickers from market.csv file
 
 df = pd.read_csv('config/market.csv')
 l1 = df['Ticker'].tolist()
@@ -22,7 +22,7 @@ for symbol in l1:
   ai.elder_divergence(df, period=40)
   
   
-  
+  # save data as csv
   df.to_csv("data/" + symbol + ".csv")
 
   
