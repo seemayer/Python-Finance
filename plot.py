@@ -15,7 +15,7 @@ def plot_chart(symbol, interval):
   df['Date'] = pd.to_datetime(df['Date']).view('int64') # use finplot's internal representation, which is ns
   print(df.tail(6))
   
-  ax,ax2 = fplt.create_plot('TITLE', rows=2)
+  ax,ax2 = fplt.create_plot(symbol, rows=2)
   
   # plot macd with standard colors first
   fplt.volume_ocv(df[['Date','Open','Close','macd_diff']], ax=ax2, colorfunc=fplt.strength_colorfilter)
@@ -46,4 +46,8 @@ def plot_chart(symbol, interval):
   fplt.set_time_inspector(update_legend_text, ax=ax, when='hover')
   fplt.add_crosshair_info(update_crosshair_text, ax=ax)
   
+  fplt.plot(df['Date'], df['marker'], ax=ax, color='#4a5', style='^', legend='dumb mark')
+
   fplt.show()
+
+plot_chart('SBRY.L','1d')

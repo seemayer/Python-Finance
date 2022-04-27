@@ -1,59 +1,43 @@
-#!/usr/bin/env python3
-
 import finplot as fplt
+import numpy as np
 import pandas as pd
 import requests
-from io import StringIO
-from time import time
 
+# pull some data
+symbol = 'USDT-BTC'
+url = 'https://bittrex.com/Api/v2.0/pub/market/GetTicks?marketName=%s&tickInterval=fiveMin' % symbol
+data = requests.get(url).json()
 
-# load data and convert date
-end_t = int(time()) 
-start_t = end_t - 12*30*24*60*60 # twelve months
-symbol = 'SPY'
-interval = '1d'
-url = 'https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=history' % (symbol, start_t, end_t, interval)
-r = requests.get(url, headers={'user-agent':'Mozilla/5.0'})
-df = pd.read_csv(StringIO(r.text))
-df['Date'] = pd.to_datetime(df['Date']).view('int64') # use finplot's internal representation, which is ns
+# format it in pandas
+df = pd.DataFrame(data['result'])
+df = df.rename(columns={'T':'time', 'O':'open', 'C':'close', 'H':'high', 'L':'low', 'V':'volume'})
+df = df.astype({'time':'datetime64[ns]'})
 
-ax,ax2 = fplt.create_plot('S&P 500 MACD', rows=2)
+# create two axes
+ax,ax2 = fplt.create_plot(symbol, rows=2)
 
-# plot macd with standard colors first
-macd = df.Close.ewm(span=12).mean() - df.Close.ewm(span=26).mean()
-signal = macd.ewm(span=9).mean()
-df['macd_diff'] = macd - signal
-fplt.volume_ocv(df[['Date','Open','Close','macd_diff']], ax=ax2, colorfunc=fplt.strength_colorfilter)
-fplt.plot(macd, ax=ax2, legend='MACD')
-fplt.plot(signal, ax=ax2, legend='Signal')
+# plot candle sticks
+candles = df[['time','open','close','high','low']]
+fplt.candlestick_ochl(candles, ax=ax)
 
-# change to b/w coloring templates for next plots
-fplt.candle_bull_color = fplt.candle_bear_color = '#000'
-fplt.volume_bull_color = fplt.volume_bear_color = '#333'
-fplt.candle_bull_body_color = fplt.volume_bull_body_color = '#fff'
+# overlay volume on the top plot
+volumes = df[['time','open','close','volume']]
+fplt.volume_ocv(volumes, ax=ax.overlay())
 
-# plot price and volume
-fplt.candlestick_ochl(df[['Date','Open','Close','High','Low']], ax=ax)
-hover_label = fplt.add_legend('', ax=ax)
-axo = ax.overlay()
-fplt.volume_ocv(df[['Date','Open','Close','Volume']], ax=axo)
-fplt.plot(df.Volume.ewm(span=24).mean(), ax=axo, color=1)
+# put an MA on the close price
+fplt.plot(df['time'], df['close'].rolling(25).mean(), ax=ax, legend='ma-25')
 
-#######################################################
-## update crosshair and legend when moving the mouse ##
+# place some dumb markers on low wicks
+lo_wicks = df[['open','close']].T.min() - df['low']
+df.loc[(lo_wicks>lo_wicks.quantile(0.99)), 'marker'] = df['low']
+fplt.plot(df['time'], df['marker'], ax=ax, color='#4a5', style='^', legend='dumb mark')
 
-def update_legend_text(x, y):
-    row = df.loc[df.Date==x]
-    # format html with the candle and set legend
-    fmt = '<span style="color:#%s">%%.2f</span>' % ('0b0' if (row.Open<row.Close).all() else 'a00')
-    rawtxt = '<span style="font-size:13px">%%s %%s</span> &nbsp; O%s C%s H%s L%s' % (fmt, fmt, fmt, fmt)
-    hover_label.setText(rawtxt % (symbol, interval.upper(), row.Open, row.Close, row.High, row.Low))
+# draw some random crap on our second plot
+fplt.plot(df['time'], np.random.normal(size=len(df)), ax=ax2, color='#927', legend='stuff')
+fplt.set_y_range(-1.4, +3.7, ax=ax2) # hard-code y-axis range limitation
 
-def update_crosshair_text(x, y, xtext, ytext):
-    ytext = '%s (Close%+.2f)' % (ytext, (y - df.iloc[x].Close))
-    return xtext, ytext
+# restore view (X-position and zoom) if we ever run this example again
+fplt.autoviewrestore()
 
-fplt.set_time_inspector(update_legend_text, ax=ax, when='hover')
-fplt.add_crosshair_info(update_crosshair_text, ax=ax)
-
+# we're done
 fplt.show()
