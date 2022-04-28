@@ -8,7 +8,7 @@ from time import time
 
 def plot_chart(symbol, interval):
 
-  df = pd.read_csv('data/' + symbol + '.csv', index_col = False)
+  df = pd.read_csv('screen passed/' + symbol + '.csv', index_col = False)
   
   df['Date'] = pd.to_datetime(df['Date']).view('int64') # use finplot's internal representation, which is ns
   print(df.tail(6))
@@ -47,3 +47,5 @@ def plot_chart(symbol, interval):
   fplt.plot(df['Date'], df['marker'], ax=ax, color='#4a5', style='^', legend='dumb mark')
 
   fplt.show()
+
+plot_chart('KNOS.L','1d')

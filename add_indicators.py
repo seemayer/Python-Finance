@@ -77,5 +77,6 @@ def elder_divergence(df,period):
     df.at[df.index[i],'state'] = newstate
   
   # for plotting purposes capture the low when a divergece is triggered, plot 5 points below it
-  df['marker'] = np.where(df['state']== (0,0,0,1), df.Low -5, np.NaN)
+  df['screen_passed'] = df['state'] == (0,0,0,1)
+  df['marker'] = np.where(df['screen_passed'], df.Low -5, np.NaN)
 
