@@ -48,4 +48,4 @@ def plot_chart(symbol, interval):
 
   fplt.show()
 
-plot_chart('KNOS.L','1d')
+# plot_chart('KNOS.L','1d')
