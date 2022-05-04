@@ -1,2 +1,2 @@
 Date,Open,High,Low,Close,Adj Close,Volume,macd,signal,macd_diff,crossover,crossunder,lowest_MACD,MACD_ratio,lowest_Low,MACD_up,state,screen_passed,marker
-2022-04-29,105.0,105.0,101.30000305175781,101.80000305175781,101.80000305175781,1681127,0.0,0.0,0.0,False,False,,0.0,,False,"|0,0,0,0|",False,
+2022-05-04,98.86499786376953,98.86499786376953,95.57820129394531,95.69999694824219,95.69999694824219,2058267,0.0,0.0,0.0,False,False,,0.0,,False,"|0,0,0,0|",False,

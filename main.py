@@ -65,5 +65,5 @@ df.to_csv("./screen passed/PASSED.csv", sep=',',index=False)
 
 #plot chart
 
-plt.plot_chart('KNOS.L', '1d')
+# plt.plot_chart('KNOS.L', '1d')
 
