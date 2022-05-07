@@ -1,5 +1,8 @@
 #https://github.com/highfestiva/finplot/blob/master/finplot/examples/analyze.py
 
+# This module will take a dataframe and add specific indicators to that dataframe
+
+
 import pandas as pd
 import numpy as np
 
