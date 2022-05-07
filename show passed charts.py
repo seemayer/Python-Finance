@@ -8,4 +8,4 @@ for file in os.scandir('screen passed'):
   try:
     plot.plot_chart(name,'1d')
   except:
-    print('uanble to plot '+ name)
+    print('unable to plot '+ name)
