@@ -101,7 +101,7 @@ dfwshade['Open'] = np.select(conditions, open_values)
 dfwshade['Close'] = np.select(conditions, close_values)
 
 #Create plot with blue background and 2 windows
-fplt.background = '#87CEEB' # yellow
+fplt.odd_plot_background = '#87CEEB' # yellow
 # fplt.odd_plot_background = '#f0f' # purple
 
 ax,ax2 = fplt.create_plot('TITLE', rows=2, maximize=True)
