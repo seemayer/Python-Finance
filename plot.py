@@ -2,9 +2,6 @@
 
 import finplot as fplt
 import pandas as pd
-import requests
-from io import StringIO
-from time import time
 
 def plot_chart(symbol, interval):
 
@@ -12,15 +9,10 @@ def plot_chart(symbol, interval):
   df['Date'] = pd.to_datetime(df['Date']).view('int64') # convert from object to use finplot's internal representation, which is ns
   df = df.set_index('Date')
   
-  fplt.candle_bull_color = '#C0FF3E'
-  fplt.candle_bull_body_color = '#C0FF3E'
-  
-  fplt.candle_bear_color = '#0000FF'
-  # fplt.candle_bear_body_color = '#9B30FF'
-  
-
-
-  fplt.candle_shadow_width = 1
+  # fplt.candle_bull_color = '#C0FF3E'
+  # fplt.candle_bull_body_color = '#C0FF3E'
+  # fplt.candle_bear_color = '#0000FF'
+  # fplt.candle_shadow_width = 1
   
   ax,ax2 = fplt.create_plot(symbol, rows=2)
   
@@ -61,4 +53,4 @@ def plot_chart(symbol, interval):
 
   fplt.show()
 
-plot_chart('888.L','1d')
+plot_chart('AVST.L','1d')

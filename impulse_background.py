@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-
-from datetime import date, timedelta
 import finplot as fplt
 import pandas as pd
 import yfinance as yf
@@ -60,31 +57,18 @@ df = yf.download('GOOG', period='2y', interval='1d')
 #convert to weekly data
 dfw = resample_weekly(df)
 
-
 # when writing and reading back from csv the index is convert to an object type so need to convert back to datetime64
 dfw.to_csv("./TEST.csv", sep=',')
 dfw = pd.read_csv('./TEST.csv')
 dfw['Date'] = pd.to_datetime(dfw['Date'])
 dfw = dfw.set_index('Date')
 
-
-
-
-
-
 #Create copy of weekly data for shading
 dfwshade = dfw[['Open','Close']].copy()
-
-# dfw = dfw.reset_index(level=0)
-# dfw['Date'] = pd.to_datetime(dfw['Date']).view('int64') # use finplot's internal representation, which is ns
 
 ai.elder_impulse(dfwshade)
 dfwshade = dfwshade[['Open','Close','impulse']]
 print(dfwshade)
-
-# plot_chart(df)
-
-# plot_chart(dfw)
 
 conditions = [
     (dfwshade.impulse.eq('green')), #green
@@ -101,13 +85,11 @@ dfwshade['Open'] = np.select(conditions, open_values)
 dfwshade['Close'] = np.select(conditions, close_values)
 
 #Create plot with blue background and 2 windows
-fplt.odd_plot_background = '#87CEEB' # yellow
-# fplt.odd_plot_background = '#f0f' # purple
+fplt.odd_plot_background = '#87CEEB' # blue
 
 ax,ax2 = fplt.create_plot('TITLE', rows=2, maximize=True)
 
 # plot down-sampled weekly candles first
-
 weekly_plot = fplt.candlestick_ochl(dfwshade[['Open','Close']], candle_width=1)
 weekly_plot.colors.update(dict(bull_frame = '#ada', bull_body='#ada', bull_shadow='#ada', bear_body='#fbc', bear_frame='#fbc'))
 
@@ -119,8 +101,6 @@ fplt.plot(dfw['Close'].ewm(span=22).mean(), ax=ax, legend='ema-22')
 dfw['macd'] = dfw.Close.ewm(span=12).mean() - dfw.Close.ewm(span=26).mean()
 dfw['signal'] = dfw.macd.ewm(span=9).mean()
 dfw['macd_diff'] = dfw.macd - dfw.signal
-
-
 
 # plot macd with standard colors first
 fplt.volume_ocv(dfw[['Open','Close','macd_diff']], ax=ax2, colorfunc=fplt.strength_colorfilter)
