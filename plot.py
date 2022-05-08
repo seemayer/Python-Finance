@@ -53,4 +53,4 @@ def plot_chart(symbol, interval):
 
   fplt.show()
 
-plot_chart('AVST.L','1d')
+plot_chart('888.L','1d')

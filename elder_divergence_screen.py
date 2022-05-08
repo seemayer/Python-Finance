@@ -7,8 +7,8 @@ from yahoo_fin import stock_info as si  # http://theautomatic.net/yahoo_fin-docu
 def update_market_list():
 
   # Download list of market tickers and save to file
-  tickers = si.tickers_ftse100() 
-  # tickers = si.tickers_ftse250() 
+  # tickers = si.tickers_ftse100() 
+  tickers = si.tickers_ftse250() 
   tickers = [item + '.L' for item in tickers]
 
   df = pd.DataFrame(data={"Ticker": tickers})
@@ -33,7 +33,7 @@ for ticker in lst_tickers:
   try:
     df = gd.get_data(ticker)
 
-    #caculate indicators for each ticker and add to dataframe
+    #calculate indicators for each ticker and add to dataframe
     ai.elder_divergence(df, period=40)
 
     #check last 5 days to see if screen was passed

@@ -10,6 +10,11 @@ def ema(df, period):
   # add EMA of length period
   df[str(period) + 'EMA'] = df.Close.ewm(span=period).mean()
 
+def force_index(df):
+  # add EMA of length period
+  df['force_index'] = df.Close.diff() * df.Volume
+  df['force_index'] = df['force_index'].ewm(span=2).mean()
+
 def macd(df):
   # add MACD, Signal and histogram (diff)
   df['macd'] = df.Close.ewm(span=12).mean() - df.Close.ewm(span=26).mean()
@@ -20,15 +25,15 @@ def macd(df):
 
 def elder_impulse(df):
   macd(df) #requires macd columns to be added to df
-  ema(df,22) #requires ema
+  ema(df,13) #requires ema
 
   #https://www.dataquest.io/blog/tutorial-add-column-pandas-dataframe-based-on-if-else-condition/
   # create a list of our conditions
   conditions = [
-      (df.macd_diff.diff().gt(0) & df['22EMA'].diff().gt(0)), #green
-      (df.macd_diff.diff().lt(0) & df['22EMA'].diff().lt(0)), #red
-      (df.macd_diff.diff().gt(0) & df['22EMA'].diff().lt(0)), #blue
-      (df.macd_diff.diff().lt(0) & df['22EMA'].diff().gt(0))  #blue
+      (df.macd_diff.diff().gt(0) & df['13EMA'].diff().gt(0)), #green
+      (df.macd_diff.diff().lt(0) & df['13EMA'].diff().lt(0)), #red
+      (df.macd_diff.diff().gt(0) & df['13EMA'].diff().lt(0)), #blue
+      (df.macd_diff.diff().lt(0) & df['13EMA'].diff().gt(0))  #blue
       ]
   
   # create a list of the values we want to assign for each condition
