@@ -2,6 +2,7 @@
 
 import finplot as fplt
 import pandas as pd
+import add_indicators as ai
 
 def plot_chart(symbol, interval):
 
@@ -18,6 +19,7 @@ def plot_chart(symbol, interval):
   
 
   # plot macd with standard colors first
+  ai.macd(df)
   fplt.volume_ocv(df[['Open','Close','macd_diff']], ax=ax2, colorfunc=fplt.strength_colorfilter)
   
   
@@ -49,8 +51,8 @@ def plot_chart(symbol, interval):
   fplt.set_time_inspector(update_legend_text, ax=ax, when='hover')
   fplt.add_crosshair_info(update_crosshair_text, ax=ax)
   
-  fplt.plot(df['marker'], ax=ax, color='#4a5', style='^', legend='dumb mark')
+  # fplt.plot(df['marker'], ax=ax, color='#4a5', style='^', legend='dumb mark')
 
   fplt.show()
 
-plot_chart('888.L','1d')
+# plot_chart('AAF.L','1d')
