@@ -1,9 +1,12 @@
-import numpy as np
 import pandas as pd
-import get_stock_data as gd
-import add_indicators as ai
 import os 
-from yahoo_fin import stock_info as si  # http://theautomatic.net/yahoo_fin-documentation/
+import add_indicators as ai
+
+def df_from_csv(file): 
+  df = pd.read_csv(file.path)
+  df['Date'] = pd.to_datetime(df['Date'])
+  df = df.set_index('Date')
+  return df
 
 def resample_weekly(df):
 
@@ -18,68 +21,44 @@ def resample_weekly(df):
 
     return dfw
 
-def update_market_list():
-
-  # Download list of market tickers and save to file
-  tickers = si.tickers_ftse100() 
-  # tickers = si.tickers_ftse250() 
-  tickers = [item + '.L' for item in tickers]
-
-  df = pd.DataFrame(data={"Ticker": tickers})
-  df.to_csv("./config/market.csv", index=False)
-
-# update_market_list()
-
-# delete all files in screen passed folder
-lst_screen_passed = []
-lst_screen_passed2 = []
-
+#Reset screen passed list & empty files from folder
+lst_screen1_passed = []
 for file in os.scandir('screen passed'):
   os.unlink(file.path)
+
+#Screen 1 - Weekly impulse
+for file in os.scandir('./data/'):
+  ticker = file.name[:-4] #remove .csv from filename
+#   print(ticker)
+
+  df = df_from_csv(file)
+#   print(df)
   
-#pull list of tickers from market.csv file
-df = pd.read_csv('config/market.csv')
-lst_tickers = df['Ticker'].tolist()
+  dfw = resample_weekly(df)
+#   print(dfw)
 
-# pull data for each ticker
-for ticker in lst_tickers:
-  print (ticker)
-  
-  try:
-    df = gd.get_data(ticker)
+  #calculate indicators for each ticker and add to dataframe
+  dfw = ai.elder_impulse(dfw)
+  dfw['screen_passed'] = dfw.impulse.ne('red')
+#   print(dfw)
 
-    dfw = resample_weekly(df)
+  #check last day to see if screen was passed
+  screenpassed = any(dfw.screen_passed.tail(1))
 
-    #calculate indicators for each ticker and add to dataframe
-    ai.elder_impulse(dfw)
+  #save data as csv
+  if screenpassed:
+    lst_screen1_passed.append(ticker)
 
-    dfw['screen_passed'] = dfw.impulse.ne('red')
+#Screen 2 - Daily Force index
+for ticker in lst_screen1_passed:
+  #calculate indicators for each ticker and add to dataframe
+  screen_df = df.copy()
+  screen_df = ai.force_index(screen_df)
+  screen_df['screen_passed'] = screen_df.force_index.lt(0)
 
-    #check last 5 days to see if screen was passed
-    print(dfw.tail(5))
-    screenpassed = any(dfw.screen_passed.tail(1))
-    
-    # save data as csv
-    if screenpassed:
-      lst_screen_passed.append(ticker)      
+  #check last day to see if screen was passed
+  screenpassed = any(screen_df.screen_passed.tail(1))
+  if screenpassed:
+    df.to_csv("./screen passed/" + ticker + ".csv")
 
-      #calculate indicators for each ticker and add to dataframe
-      ai.force_index(df)
-
-      df['screen_passed'] = df.force_index.lt(0)
-
-      #check last 5 days to see if screen was passed
-      print(df.tail(5))
-      screenpassed2 = any(df.screen_passed.tail(1))
-      if screenpassed2:
-        lst_screen_passed2.append(ticker)      
-
-  except:
-    print("unable to pull data for "+ ticker)
-  
-# saving export list
-df = pd.DataFrame(data={"stock": lst_screen_passed})
-df.to_csv("./screen passed/SCREEN_PASSED.csv", sep=',',index=False)
-
-df = pd.DataFrame(data={"stock": lst_screen_passed2})
-df.to_csv("./screen passed/SCREEN_PASSED2.csv", sep=',',index=False)
+print('screen complete')

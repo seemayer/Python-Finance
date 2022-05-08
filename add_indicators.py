@@ -14,6 +14,7 @@ def force_index(df):
   # add EMA of length period
   df['force_index'] = df.Close.diff() * df.Volume
   df['force_index'] = df['force_index'].ewm(span=2).mean()
+  return df
 
 def macd(df):
   # add MACD, Signal and histogram (diff)
@@ -41,6 +42,7 @@ def elder_impulse(df):
   
   # create a new column and use np.select to assign values to it using our lists as arguments
   df['impulse'] = np.select(conditions, values)
+  return df
   
 def elder_divergence(df,period):
   
