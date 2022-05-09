@@ -1,3 +1,5 @@
+#Populate the data folder with stock data based on a list of tickers
+
 import os
 import yfinance as yf
 from yahoo_fin import stock_info as si

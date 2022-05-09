@@ -1,7 +1,27 @@
 import pandas as pd
 import os 
 import add_indicators as ai
+import shutil
 
+
+def reset_screen_files():
+  try:
+    shutil.rmtree('./screen passed/') # delete folder and all its contents
+  except:
+    print('Unable to delete folder')
+
+  try:
+    # copy files from data folder
+    src_dir = './data/'
+    dest_dir = './screen passed/'
+    # getting all the files in the source directory
+    files = os.listdir(src_dir)
+    shutil.copytree(src_dir, dest_dir)
+    print('Sucessfully copied data to screen passed folder')
+  except:
+    print('unable to copy over data')
+  
+  
 def df_from_csv(file): 
   df = pd.read_csv(file.path)
   df['Date'] = pd.to_datetime(df['Date'])
@@ -21,44 +41,40 @@ def resample_weekly(df):
 
     return dfw
 
-#Reset screen passed list & empty files from folder
-lst_screen1_passed = []
-for file in os.scandir('screen passed'):
-  os.unlink(file.path)
+
+
+reset_screen_files()
 
 #Screen 1 - Weekly impulse
-for file in os.scandir('./data/'):
-  ticker = file.name[:-4] #remove .csv from filename
-#   print(ticker)
-
-  df = df_from_csv(file)
-#   print(df)
+for file in os.scandir('./screen passed/'):
   
+  df = df_from_csv(file)
   dfw = resample_weekly(df)
-#   print(dfw)
 
   #calculate indicators for each ticker and add to dataframe
   dfw = ai.elder_impulse(dfw)
   dfw['screen_passed'] = dfw.impulse.ne('red')
-#   print(dfw)
 
   #check last day to see if screen was passed
   screenpassed = any(dfw.screen_passed.tail(1))
 
-  #save data as csv
-  if screenpassed:
-    lst_screen1_passed.append(ticker)
+  #delete files that do not pass the screen
+  if not(screenpassed):
+    os.unlink(file.path)
 
 #Screen 2 - Daily Force index
-for ticker in lst_screen1_passed:
-  #calculate indicators for each ticker and add to dataframe
-  screen_df = df.copy()
-  screen_df = ai.force_index(screen_df)
-  screen_df['screen_passed'] = screen_df.force_index.lt(0)
+for file in os.scandir('./screen passed/'):
 
+  df = df_from_csv(file)
+
+  #calculate indicators for each ticker and add to dataframe
+  df = ai.force_index(df)
+  df['screen_passed'] = df.force_index.lt(0)
+  
   #check last day to see if screen was passed
-  screenpassed = any(screen_df.screen_passed.tail(1))
-  if screenpassed:
-    df.to_csv("./screen passed/" + ticker + ".csv")
+  screenpassed = any(df.screen_passed.tail(1))
+  
+  if not(screenpassed):
+    os.unlink(file.path)
 
 print('screen complete')
