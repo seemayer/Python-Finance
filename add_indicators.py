@@ -6,6 +6,36 @@
 import pandas as pd
 import numpy as np
 
+def OrderLevel_ADP(df, FastEMAPeriod = 13):
+
+  #Calculate downside penetration = down day and points below the EMA
+  df['Fast_EMA'] = df.Close.ewm(span=FastEMAPeriod).mean()
+  df['Down_Day'] = (df.Close < df.Open)
+  df['Penetration'] = df.Close.lt(df.Fast_EMA)
+  df['Downside_Pen_Amt'] = (df.Fast_EMA - df.Close) * df.Down_Day * df.Penetration
+
+  # Predict tomorrows EMA
+  df['Predicted_EMA'] = df.Fast_EMA + df.Fast_EMA.diff()
+
+
+  df['Downside_Pen_Amt'] = df['Downside_Pen_Amt'].replace(0, np.nan)
+  # get average of last 5 downside penetrations
+  ADP = df.Downside_Pen_Amt.dropna().tail(5).mean().round(2)
+
+  # print(f'ADP = {ADP}')
+
+  orderlevel = round(df.Predicted_EMA[-1] - ADP,2)
+
+  # print(F'Order level = {orderlevel}')
+  return orderlevel
+
+
+
+
+  
+
+
+
 def ema(df, period):
   # add EMA of length period
   df[str(period) + 'EMA'] = df.Close.ewm(span=period).mean()

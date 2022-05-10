@@ -2,10 +2,9 @@
 
 # https://the7circles.uk/trading-for-a-living-5-market-indicators-and-trading-systems/
 
-import get_stock_data as gsd
+
 import os
 import pandas as pd
-import numpy as np
 import add_indicators as ai
 
 def df_from_csv(file_path): 
