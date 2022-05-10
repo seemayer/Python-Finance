@@ -41,6 +41,18 @@ rs_df = rs_df[rs_df.RS_Rating >= rs_df.RS_Rating.quantile(.70)]
 
 print('Top 30% relative strength: \n',rs_df)
 
-my_df = df_from_csv('./screen passed/ENOG.L.csv')
-ai.force_index(my_df)
-print(f'ENOG: \n {my_df}')
+my_list = rs_df.Ticker.tolist()
+my_list = [item + '.csv' for item in my_list] #add suffix
+print(my_list)
+
+for file in os.scandir('./screen passed/'):
+  # print(file.name, file.path)
+    if file.name not in my_list:
+      os.unlink(file.path)
+
+
+
+
+# my_df = df_from_csv('./screen passed/ENOG.L.csv')
+# ai.force_index(my_df)
+# print(f'ENOG: \n {my_df}')
