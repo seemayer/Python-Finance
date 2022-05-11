@@ -15,7 +15,7 @@ for file in os.scandir('./data/'):
 
 # Download list of market tickers and save to file
 lst_tickers = si.tickers_ftse100() 
-# lst_tickers.extend(si.tickers_ftse250())
+lst_tickers.extend(si.tickers_ftse250())
 lst_tickers = [item + '.L' for item in lst_tickers] #add suffix
 
 for ticker in lst_tickers:
