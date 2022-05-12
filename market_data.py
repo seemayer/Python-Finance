@@ -6,6 +6,13 @@ import yfinance as yf
 from yahoo_fin import stock_info as si
 import shutil
 
+
+
+
+
+
+
+
 def delete_files_in_dir(directory_name): # Delete all files in a directory
   for file in os.scandir(directory_name):
     os.unlink(file.path)
@@ -29,6 +36,21 @@ def get_stock_data(ticker, interval = '1d', period = '1y'): # download data from
   df = yf.download(ticker, period = period, interval = interval)
   return df
 
+def download_SETS_tickers():
+
+  MY_EXCEL_URL="https://docs.londonstockexchange.com/sites/default/files/documents/list_of_sets_securities_103.xls"
+    
+  xl_df = pd.read_excel(MY_EXCEL_URL,sheet_name='SETS',skiprows=3,usecols='B:V')
+  xl_df = xl_df.dropna()
+  xl_df = xl_df.query("Currency != 'USD'")
+  lst_tickers = xl_df['Mnemonic'].to_list()
+  lst_tickers = [item.replace('.','') for item in lst_tickers] #remove periods
+  # xl_df.to_csv('SETS.csv', index = False)
+  # print(lst_tickers)
+  return lst_tickers
+
+
+
 def get_list_of_market_tickers(market): # Download list of market tickers
   if market == 'FTSE100':
     lst_tickers = si.tickers_ftse100() 
@@ -36,6 +58,8 @@ def get_list_of_market_tickers(market): # Download list of market tickers
     lst_tickers = si.tickers_ftse250()
   elif market == 'FTSE350':
     lst_tickers = si.tickers_ftse100() + si.tickers_ftse250()
+  elif market == 'SETS':
+    lst_tickers = download_SETS_tickers()
 
   lst_tickers = [item + '.L' for item in lst_tickers] #add suffix
   return lst_tickers
