@@ -157,7 +157,7 @@ def chandelier_exit_long(df, period = 22): # default period is 22
   df['rolling_high'] = df['High'].rolling(min_periods=period, window=period, center=False).max()
   df['chandelier_long'] = df['rolling_high'] - df['Avg TR'] * 3
   cel = df['chandelier_long'][-1]
-  print(df)
+  # print(df)
   return cel
 
 def chandelier_exit_short(df, period = 22): # default period is 22
