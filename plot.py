@@ -2,7 +2,7 @@
 
 import finplot as fplt
 import pandas as pd
-import add_indicators as ai
+import technical_indicators as ti
 
 def plot_chart(symbol, interval):
 
@@ -19,7 +19,7 @@ def plot_chart(symbol, interval):
   
 
   # plot macd with standard colors first
-  ai.macd(df)
+  ti.macd(df)
   fplt.volume_ocv(df[['Open','Close','macd_diff']], ax=ax2, colorfunc=fplt.strength_colorfilter)
   
   

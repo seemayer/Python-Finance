@@ -1,6 +1,22 @@
+import market_data as md
+import technical_indicators as ti
 
-# import test
-import download_market_data
-import elder_triple_screen
-import relative_strength
-import get_order_levels
+# df = md.get_stock_data('GOOG')
+# df = ti.add_ema(df,37)
+# df = ti.add_force_index(df)
+# df = ti.add_macd(df)
+# df = ti.add_macd_cross(df)
+# df = ti.add_elder_impulse(df)
+# df = ti.add_elder_bull_divergence(df)
+# md.reset_market_data()
+
+# md.del_dir_and_copy_files(src_dir = './data/', tar_dir = './screen passed/')
+
+
+# print(df)
+
+print(md.get_list_of_market_tickers('FTSE350'))
+
+# market_data.reset_market_data(market = 'FTSE250')
+
+

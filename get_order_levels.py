@@ -5,14 +5,9 @@
 
 import os
 import pandas as pd
-import add_indicators as ai
-
-def df_from_csv(file_path): 
-  df = pd.read_csv(file_path)
-  df['Date'] = pd.to_datetime(df['Date'])
-  df = df.set_index('Date')
-  return df
+import technical_indicators as ti
+import market_data as md
 
 for file in os.scandir('./screen passed/'):
-  df = df_from_csv(file.path)
-  print(f'ticker = {file.name[:-4]} , orderlevel = {ai.OrderLevel_ADP(df)}')
+  df = md.df_from_csv(file.path)
+  print(f'ticker = {file.name[:-4]} , orderlevel = {ti.average_downside_penetration(df)}')
