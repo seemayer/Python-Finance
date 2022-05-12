@@ -4,6 +4,12 @@
 
 import pandas as pd
 import numpy as np
+import market_data as md
+
+
+
+
+
 
 def average_downside_penetration(main_df, FastEMAPeriod = 13):
 
@@ -130,6 +136,60 @@ def add_elder_bull_divergence(df, period = 40):
   df['marker'] = np.where(df['divergence'], df.Low -5, np.NaN)
 
   return df
+
+def avg_true_range(df, period=22): 
+
+  df['tr1'] = df["High"] - df["Low"]
+  df['tr2'] = abs(df["High"] - df["Close"].shift(1))
+  df['tr3'] = abs(df["Low"] - df["Close"].shift(1))
+
+  df['true_range'] = df[['tr1', 'tr2', 'tr3']].max(axis=1)
+  df['Avg TR'] = df['true_range'].rolling(min_periods=period, window=period, center=False).mean()
+   
+  # print(df)
+  return df
+
+
+def chandelier_exit_long(df, period = 22): # default period is 22
+
+  df = avg_true_range(df)
+
+  df['rolling_high'] = df['High'].rolling(min_periods=period, window=period, center=False).max()
+  df['chandelier_long'] = df['rolling_high'] - df['Avg TR'] * 3
+  cel = df['chandelier_long'][-1]
+  print(df)
+  return cel
+
+def chandelier_exit_short(df, period = 22): # default period is 22
+
+  df = avg_true_range(df)
+  
+  df['rolling_low'] = df['Low'].rolling(min_periods=period, window=period, center=False).min()
+  df['chandelier_short'] = df['rolling_low'] + df['Avg TR'] * 3
+  ces = df['chandelier_short'][-1]
+  return ces
+
+def test():
+  df = md.get_stock_data('GOOG')
+  df.to_csv('GOOG.csv')
+  
+  # df = ti.add_ema(df,37)
+  # df = ti.add_force_index(df)
+  # df = ti.add_macd(df)
+  # df = ti.add_macd_cross(df)
+  # df = ti.add_elder_impulse(df)
+  # df = ti.add_elder_bull_divergence(df)
+  
+  # md.reset_market_data()
+  # df = avg_true_range(df)
+  # cel = chandelier_exit_long(df)
+  # ces = chandelier_exit_short(df)
+  
+  
+  # md.del_dir_and_copy_files(src_dir = './data/', tar_dir = './screen passed/')
+  
+  
+  # print(df)
 
 if __name__ == "__main__":
   # stuff only to run when not called via 'import' here

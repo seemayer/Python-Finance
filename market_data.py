@@ -54,6 +54,7 @@ def reset_market_data(directory_name = './data/', market = 'FTSE100'):
   delete_files_in_dir(directory_name)
   lst_tickers = get_list_of_market_tickers(market)
   save_stock_data_to_dir(lst_tickers, directory_name)
+  print('Successfully downloaded market data and saved to folder')
 
 def df_from_csv(file_path): 
   # when writing and reading back from csv the index is converted to an object type so need to convert back to datetime64 if to be used with finplot
@@ -74,6 +75,12 @@ def resample_weekly(df):
     dfw = dfw.dropna()
 
     return dfw
+
+def filter_files_in_dir(directory_name, filter_list):
+  for file in os.scandir(directory_name):
+    # print(file.name, file.path)
+      if file.name not in filter_list:
+        os.unlink(file.path)
 
 if __name__ == "__main__":
    # stuff only to run when not called via 'import' here
