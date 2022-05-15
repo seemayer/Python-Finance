@@ -13,7 +13,8 @@ def delete_files_in_dir(directory_name):  # Delete all files in a directory
         os.unlink(file.path)
     print(f'Files in {directory_name} deleted')
 
-
+def del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR):
+    
     try:
         shutil.rmtree(tar_dir)  # delete folder and all its contents
     except:
