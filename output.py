@@ -10,6 +10,30 @@ import market_data as md
 
 def order_levels():
 
+  d = []
   for file in os.scandir('./screen passed/'):
-    df = md.df_from_csv(file.path)
-    print(f'ticker = {file.name[:-4]} , orderlevel = {ti.average_downside_penetration(df)}, stoplevel = {ti.chandelier_exit_long(df)}')
+    df = md.df_from_csv(file.path)  
+    d.append(
+          {
+              'Ticker': file.name[:-4],
+              'Order Level': ti.average_downside_penetration(df),
+              'Stop Level': ti.chandelier_exit_long(df)
+          }
+      )
+  
+  out_df = pd.DataFrame(d)
+  print(out_df)
+  out_df.to_csv('OUTPUT.csv', index = False)
+
+
+  
+ 
+
+  
+  # for file in os.scandir('./screen passed/'):
+  #   df = md.df_from_csv(file.path)
+  #   print(f'ticker = {file.name[:-4]} , orderlevel = {ti.average_downside_penetration(df)}, stoplevel = {ti.chandelier_exit_long(df)}')
+
+
+
+
