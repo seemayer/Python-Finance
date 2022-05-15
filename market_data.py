@@ -1,5 +1,6 @@
 # stuff to run always here such as class/def
 
+import config
 import os
 import pandas as pd
 import yfinance as yf
@@ -10,9 +11,9 @@ import shutil
 def delete_files_in_dir(directory_name):  # Delete all files in a directory
     for file in os.scandir(directory_name):
         os.unlink(file.path)
+    print(f'Files in {directory_name} deleted')
 
-
-def del_dir_and_copy_files(src_dir='./data/', tar_dir='./screen passed/'):
+def del_dir_and_copy_files(src_dir=config.DATA_DIR, tar_dir=config.SCREEN_DIR):
     try:
         shutil.rmtree(tar_dir)  # delete folder and all its contents
     except:
@@ -27,10 +28,16 @@ def del_dir_and_copy_files(src_dir='./data/', tar_dir='./screen passed/'):
         print('unable to copy over data')
 
 
-def get_stock_data(ticker,
-                   interval='1d',
-                   period='1y'):  # download data from yahoo
-    df = yf.download(ticker, period=period, interval=interval)
+def get_stock_data(ticker, interval=config.INTERVAL, period=config.PERIOD):
+    # download data from yahoo
+    if config.START == None or config.END == None:
+        df = yf.download(ticker, period=period, interval=interval)
+        
+        print('period')
+    else:
+        df = yf.download(ticker, interval=interval, start=config.START, end=config.END)
+        print('start end')
+       
     return df
 
 
@@ -82,10 +89,14 @@ def get_list_of_market_tickers(market):  # Download list of market tickers
         'SETS': download_SETS_tickers()
     }
     lst_tickers = dict_markets[market]
-    lst_tickers = [item[:-1] if item[-1] == '.' else item for item in lst_tickers]  #remove periods from end
-    lst_tickers = [item.replace('.','-') for item in lst_tickers]  #replace internal dots with dashes to get yahoo format    
-    lst_tickers = [item + '.L' for item in lst_tickers]  #add suffix
-    print(lst_tickers)
+    #remove periods from end
+    lst_tickers = [item[:-1] if item[-1] == '.' else item for item in lst_tickers]  
+    #replace internal dots with dashes to get yahoo format
+    lst_tickers = [item.replace('.', '-') for item in lst_tickers]
+    #add suffix
+    lst_tickers = [item + '.L' for item in lst_tickers]  
+    # print(lst_tickers)
+    # print(f'{market} Tickers downloaded')
 
     return lst_tickers
 
@@ -101,11 +112,10 @@ def save_stock_data_to_dir(lst_tickers, directory_name):
             print("unable to pull data for " + ticker)
 
 
-def reset_market_data(directory_name='./data/', market='FTSE100'):
+def reset_market_data(directory_name=config.DATA_DIR, lst_tickers = ['GOOG','MSFT']):
     delete_files_in_dir(directory_name)
-    lst_tickers = get_list_of_market_tickers(market)
     save_stock_data_to_dir(lst_tickers, directory_name)
-    print('Successfully downloaded market data and saved to folder')
+    print(f'Successfully downloaded market data and saved to {directory_name}')
 
 
 def df_from_csv(file_path):

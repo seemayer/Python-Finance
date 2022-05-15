@@ -1,3 +1,4 @@
+import config
 import pandas as pd
 import os 
 import technical_indicators as ti
@@ -6,10 +7,10 @@ import yfinance as yf
 
 def elder_triple():
   
-  md.del_dir_and_copy_files(src_dir = './data/', tar_dir = './screen passed/')
+  md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
   
   #Screen 1 - Weekly impulse
-  for file in os.scandir('./screen passed/'):
+  for file in os.scandir(config.SCREEN_DIR):
     
     df = md.df_from_csv(file.path)
     dfw = md.resample_weekly(df)
@@ -26,7 +27,7 @@ def elder_triple():
       os.unlink(file.path)
   
   #Screen 2 - Daily Force index
-  for file in os.scandir('./screen passed/'):
+  for file in os.scandir(config.SCREEN_DIR):
   
     df = md.df_from_csv(file.path)
   
@@ -44,14 +45,14 @@ def elder_triple():
 
 def elder_divergence():
 
-  md.del_dir_and_copy_files(src_dir = './data/', tar_dir = './screen passed/') 
+  md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR) 
   # delete all files in screen passed folder
   lst_screen_passed = []
   
   # md.del_dir_and_copy_files(src_dir = './data/', tar_dir = './screen passed/')
   
   #Screen 1 - Weekly impulse
-  for file in os.scandir('./screen passed/'):
+  for file in os.scandir(config.SCREEN_DIR):
   
     df = md.df_from_csv(file.path)
   
@@ -75,20 +76,18 @@ def elder_divergence():
   
   print(lst_screen_passed)
   
-  md.filter_files_in_dir('./screen passed/',lst_screen_passed)
+  md.filter_files_in_dir(config.SCREEN_DIR,lst_screen_passed)
 
 def relative_strength():
   returns_multiples = []
   tickers = []
-  
-  index_df = md.get_stock_data('^FTAS',period='1y', interval = '1d')
-  
+      
   # Index Returns - (last close - first close)/first close
-  index_df = md.get_stock_data('^FTAS',period='1y', interval = '1d')
+  index_df = md.get_stock_data(ticker='^FTAS')
   index_return = (index_df.Close[-1]-index_df.Close[0])/index_df.Close[0]+1
   # print(index_df, index_return)
   
-  for file in os.scandir('./screen passed/'):
+  for file in os.scandir(config.SCREEN_DIR):
     
     tickers.extend([file.name[:-4]])
   
@@ -113,7 +112,7 @@ def relative_strength():
   my_list = [item + '.csv' for item in my_list] #add suffix
   print(my_list)
   
-  md.filter_files_in_dir('./screen passed/', my_list)
+  md.filter_files_in_dir(config.SCREEN_DIR, my_list)
 
 if __name__ == "__main__":
   # stuff only to run when not called via 'import' here

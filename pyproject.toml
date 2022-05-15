@@ -10,6 +10,8 @@ finplot = "^1.8.1"
 pandas = "^1.4.2"
 yfinance = "^0.1.70"
 yahoo-fin = "^0.8.9"
+openpyxl = "^3.0.9"
+xlrd = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 
