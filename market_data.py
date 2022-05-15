@@ -36,6 +36,7 @@ def get_stock_data(ticker,
 
 def download_SETS_tickers():
 
+    # download list of SETS tickers excluding investment trusts
     MY_EXCEL_URL = "https://docs.londonstockexchange.com/sites/default/files/documents/list_of_sets_securities_103.xls"
 
     xl_df = pd.read_excel(MY_EXCEL_URL,
@@ -43,28 +44,50 @@ def download_SETS_tickers():
                           skiprows=3,
                           usecols='B:V')
     xl_df = xl_df.dropna()
-    xl_df = xl_df.query("Currency != 'USD'")
-    lst_tickers = xl_df['Mnemonic'].to_list()
-    lst_tickers = [item.replace('.', '')
-                   for item in lst_tickers]  #remove periods
+    xl_df = xl_df.query("`Currency` != 'USD'")  # remove listings in USD
+
+    # Filter out investment trusts
+    lst_IT = get_investment_trust_codes()
+    xl_df = xl_df.query("`ISIN` not in @lst_IT")
     # xl_df.to_csv('SETS.csv', index = False)
-    # print(lst_tickers)
+
+    lst_tickers = xl_df['Mnemonic'].to_list()
+
     return lst_tickers
+
+
+def get_investment_trust_codes():
+
+    MY_EXCEL_URL = "https://docs.londonstockexchange.com/sites/default/files/reports/Instrument%20list_23.xlsx"
+
+    xl_df = pd.read_excel(MY_EXCEL_URL,
+                          sheet_name='1.0 All Equity',
+                          skiprows=7,
+                          usecols='A:O')
+
+    xl_df = xl_df.query(
+        "`FCA Listing Category` == 'Premium Equity Closed Ended Investment Funds'"
+    )
+    lst_IT_ISIN = xl_df['ISIN'].to_list()
+
+    return lst_IT_ISIN
 
 
 def get_list_of_market_tickers(market):  # Download list of market tickers
 
-  dict_markets = {
-      'FTSE100': si.tickers_ftse100(),
-      'FTSE250': si.tickers_ftse250(),
-      'FTSE350': si.tickers_ftse100() + si.tickers_ftse250(),
-      'SETS': download_SETS_tickers()
-  }
-  lst_tickers = dict_markets[market]
-  lst_tickers = [item + '.L' for item in lst_tickers] #add suffix
-  # print(lst_tickers)
+    dict_markets = {
+        'FTSE100': si.tickers_ftse100(),
+        'FTSE250': si.tickers_ftse250(),
+        'FTSE350': si.tickers_ftse100() + si.tickers_ftse250(),
+        'SETS': download_SETS_tickers()
+    }
+    lst_tickers = dict_markets[market]
+    lst_tickers = [item[:-1] if item[-1] == '.' else item for item in lst_tickers]  #remove periods from end
+    lst_tickers = [item.replace('.','-') for item in lst_tickers]  #replace internal dots with dashes to get yahoo format    
+    lst_tickers = [item + '.L' for item in lst_tickers]  #add suffix
+    print(lst_tickers)
 
-  return lst_tickers
+    return lst_tickers
 
 
 def save_stock_data_to_dir(lst_tickers, directory_name):
