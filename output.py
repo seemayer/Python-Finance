@@ -2,7 +2,7 @@
 
 # https://the7circles.uk/trading-for-a-living-5-market-indicators-and-trading-systems/
 
-
+import config
 import os
 import pandas as pd
 import technical_indicators as ti
@@ -11,7 +11,7 @@ import market_data as md
 def order_levels():
 
   d = []
-  for file in os.scandir('./screen passed/'):
+  for file in os.scandir(config.SCREEN_DIR):
     df = md.df_from_csv(file.path)  
     d.append(
           {
