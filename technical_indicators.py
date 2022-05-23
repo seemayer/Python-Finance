@@ -227,13 +227,13 @@ def add_safe_zone_stops(df, multiplier = 2, window = 10):
     # for uptrends
     df['Uptrend_Down_Pen'] = -df.Low.diff().clip(None,0)
     df['Uptrend_Down_Avg'] = df.Uptrend_Down_Pen.rolling(window=window).apply(lambda x: x[x!=0].mean()) # only include non zero numbers in average
-    df['Uptrend_Sell_Stop'] = df.Low.shift(1) - df.Uptrend_Down_Avg.shift(1) * multiplier
+    df['Uptrend_Sell_Stop'] = df.Low.rolling(window=2).min() - df.Uptrend_Down_Avg.shift(1) * multiplier
     df['Uptrend_Protected'] = df.Uptrend_Sell_Stop.rolling(window=3).max()
 
     # for downtrends
     df['Downtrend_Up_Pen'] = df.High.diff().clip(0,None)
     df['Downtrend_Up_Avg'] = df.Downtrend_Up_Pen.rolling(window=window).apply(lambda x: x[x!=0].mean()) # only include non zero numbers in average
-    df['Downtrend_Buy_Stop'] = df.High.shift(1) + df.Downtrend_Up_Avg.shift(1) * multiplier
+    df['Downtrend_Buy_Stop'] = df.High.rolling(window=2).max() + df.Downtrend_Up_Avg.shift(1) * multiplier * 1.5 #wider stops on shorts
     df['Downtrend_Protected'] = df.Downtrend_Buy_Stop.rolling(window=3).min()
 
     df = df.drop(columns=['Uptrend_Down_Pen',
@@ -241,7 +241,6 @@ def add_safe_zone_stops(df, multiplier = 2, window = 10):
                      'Downtrend_Up_Pen',
                      'Downtrend_Up_Avg',
                      ])
-
 
     return df
 
