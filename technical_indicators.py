@@ -34,7 +34,17 @@ def average_downside_penetration(main_df, FastEMAPeriod=13):
 
 def add_ema(df, period=13):
     # add EMA of length period
-    df[f'{period}EMA'] = df.Close.ewm(span=period).mean()
+    
+    # use SMA as starting amount for EMA
+    sma = df.Close.rolling(window=period, min_periods=period).mean()[:period]
+    rest = df.Close[period:]
+    df[f'{period}EMA']=pd.concat([sma, rest]).ewm(span=period, adjust=False).mean()
+    
+    # print(df)
+    
+    
+    
+    # df[f'{period}EMA'] = df.Close.ewm(span=period).mean()
     return df
 
 
@@ -186,10 +196,51 @@ def chandelier_exit_short(df, period=22):  # default period is 22
     ces = df['chandelier_short'][-1].round(2)
     return ces
 
+def auto_envelope(df, ema_period=26, multiplier=2, lookback_period=100):
+
+    add_ema(df, ema_period)  #requires ema
+    df['myvar_squared'] = (df.Close - df[f'{ema_period}EMA'])**2
+    df['mymov'] = df.myvar_squared.rolling(window = lookback_period).mean()**.5
+    df['newmax'] = df.mymov.rolling(window=6).max()
+
+    df['upper_channel'] = df[f'{ema_period}EMA'] + df.newmax*multiplier
+    df['lower_channel'] = df[f'{ema_period}EMA'] - df.newmax*multiplier
+
+    return df
+
+def safe_zone_stops(df, multiplier = 2, window = 10):
+    # for uptrends
+    df['Uptrend_Down_Pen'] = -df.Low.diff().clip(None,0)
+    df['Uptrend_Down_Avg'] = df.Uptrend_Down_Pen.rolling(window=window).apply(lambda x: x[x!=0].mean()) # only include non zero numbers in average
+    df['Uptrend_Short_Stop'] = df.Low.shift(1) - df.Uptrend_Down_Avg.shift(1) * multiplier
+    df['Uptrend_Protected'] = df.Uptrend_Short_Stop.rolling(window=3).max()
+
+    # for downtrends
+    df['Downtrend_Up_Pen'] = df.High.diff().clip(0,None)
+    df['Downtrend_Up_Avg'] = df.Downtrend_Up_Pen.rolling(window=window).apply(lambda x: x[x!=0].mean()) # only include non zero numbers in average
+    df['Downtrend_Long_Stop'] = df.High.shift(1) + df.Downtrend_Up_Avg.shift(1) * multiplier
+    df['Downtrend_Protected'] = df.Downtrend_Long_Stop.rolling(window=3).min()
+
+    df = df.drop(columns=['Uptrend_Down_Pen',
+                     'Uptrend_Down_Avg',
+                     'Uptrend_Short_Stop',
+                     'Downtrend_Up_Pen',
+                     'Downtrend_Up_Avg',
+                     'Downtrend_Long_Stop'
+                     ])
+
+
+    return df
 
 def test():
-    df = md.get_stock_data('GOOG')
-    df.to_csv('GOOG.csv')
+    # df = md.get_stock_data('ASC.L')
+    # df.to_csv('ASC.L.csv')
+    df = md.df_from_csv('SafeZone_Test_Data.csv')
+    df = safe_zone_stops(df)
+    # df = auto_envelope(df)
+
+    df.to_csv('TEST.csv')
+    # print(df)
 
     # df = ti.add_ema(df,37)
     # df = ti.add_force_index(df)
@@ -208,6 +259,9 @@ def test():
     # print(df)
 
 
+
+
 if __name__ == "__main__":
     # stuff only to run when not called via 'import' here
+    test()
     pass
