@@ -5,10 +5,10 @@ import technical_indicators as ti
 import market_data as md
 import yfinance as yf
 
-def elder_triple():
-  
-  md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
-  
+
+
+def weekly_impulse_not_equal(colour = 'red'):
+
   #Screen 1 - Weekly impulse
   for file in os.scandir(config.SCREEN_DIR):
     
@@ -17,7 +17,7 @@ def elder_triple():
   
     #calculate indicators for each ticker and add to dataframe
     dfw = ti.add_elder_impulse(dfw)
-    dfw['screen_passed'] = dfw.impulse.ne('red')
+    dfw['screen_passed'] = dfw.impulse.ne(colour)
   
     #check last day to see if screen was passed
     screenpassed = any(dfw.screen_passed.tail(1))
@@ -25,21 +25,48 @@ def elder_triple():
     #delete files that do not pass the screen
     if not(screenpassed):
       os.unlink(file.path)
-  
-  #Screen 2 - Daily Force index
+
+def force_index(below_zero = True):
+
   for file in os.scandir(config.SCREEN_DIR):
   
     df = md.df_from_csv(file.path)
   
     #calculate indicators for each ticker and add to dataframe
     df = ti.add_force_index(df)
-    df['screen_passed'] = df.force_index.lt(0)
+
+    if below_zero:
+      df['screen_passed'] = df.force_index.lt(0)
+    else:
+      df['screen_passed'] = df.force_index.gt(0)
     
     #check last day to see if screen was passed
     screenpassed = any(df.screen_passed.tail(1))
     
     if not(screenpassed):
       os.unlink(file.path)
+
+def elder_triple_bull():
+  
+  md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
+  
+  #Screen 1 - Weekly impulse
+  weekly_impulse_not_equal('red')
+  
+  #Screen 2 - Daily Force index
+  force_index(below_zero = True)
+  
+  print('triple screen complete')
+
+def elder_triple_bear():
+  
+  md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
+  
+  #Screen 1 - Weekly impulse
+  weekly_impulse_not_equal('green')
+  
+  #Screen 2 - Daily Force index
+  force_index(below_zero = False)
   
   print('triple screen complete')
 
@@ -140,4 +167,7 @@ def channel_short():
 
 if __name__ == "__main__":
   # stuff only to run when not called via 'import' here
-  pass
+  # md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
+  
+  elder_triple_bear()
+  # weekly_impulse_not_equal(colour='green')

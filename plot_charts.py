@@ -5,22 +5,23 @@ import numpy as np
 import technical_indicators as ti
 import market_data as md
 import os
+from pathlib import Path
   
-def triple_screen(symbol = 'GOOG'): 
+def triple_screen(filepath = '.\data\VOD.L.csv'): 
 
 # create a chart where background colours show weekly impulse and also plot daily candles and force index. To be used for Elder Triple Screen
+  file = Path(filepath)
+  symbol = file.name[:-4]
+  interval = '1d'
+  # print(file)
+
+  df = md.df_from_csv(file)
+  dfw = md.resample_weekly(df) #convert to weekly data
   
-  df = md.get_stock_data(symbol, period='2y')
-  
-  #convert to weekly data
-  dfw = md.resample_weekly(df)
-  
-  #Create copy of weekly data for shading
-  dfwshade = dfw[['Open','Close']].copy()
+  dfwshade = dfw[['Open','Close']].copy() #Create copy of weekly data for shading
   
   ti.add_elder_impulse(dfwshade)
-  dfwshade = dfwshade[['Open','Close','impulse']]
-  # print(dfwshade)
+  dfwshade = dfwshade[['Open','Close','impulse']] #filter columns
   
   conditions = [
       (dfwshade.impulse.eq('green')), #green
@@ -38,6 +39,8 @@ def triple_screen(symbol = 'GOOG'):
   # dfwshade.to_csv('Weekly.csv')
   dfwshade = md.resample_daily(dfwshade)
   # dfwshade.to_csv('Daily.csv')
+  date_list = df.index.to_list()
+  dfwshade = dfwshade[dfwshade.index.isin(date_list)] # reduce to original date list
 
   #Create plot with blue background and 2 windows
   fplt.odd_plot_background = '#87CEEB' # blue
@@ -47,7 +50,8 @@ def triple_screen(symbol = 'GOOG'):
   hover_label = fplt.add_legend('', ax=ax)
   axo = ax.overlay()
   
-  
+  print(dfwshade)
+  print(df)
   # plot down-sampled weekly candles first
   weekly_plot = fplt.candlestick_ochl(dfwshade[['Open','Close']], candle_width=1)
   weekly_plot.colors.update(dict(bull_frame = '#ada', bull_body='#ada', bull_shadow='#ada', bear_body='#fbc', bear_frame='#fbc'))
@@ -129,8 +133,8 @@ def screen_passed():
     print(name)
   
     try:
-      plot_chart(name,'1d')
+      triple_screen(file)
     except:
       print('unable to plot '+ name)
 
-triple_screen()
+screen_passed()
