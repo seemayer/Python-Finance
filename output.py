@@ -26,7 +26,27 @@ def order_levels():
   out_df.to_csv('OUTPUT.csv', index = False)
 
 
+def channel_order_levels_short():
+
+  d = []
+  for file in os.scandir(config.SCREEN_DIR):
+    df = md.df_from_csv(file.path)
+    df = ti.add_auto_envelope(df)
+    df = ti.add_safe_zone_stops(df)
+
+    d.append(
+          {
+              'Ticker': file.name[:-4],
+              'Order Level': df.Close[-1].round(2),
+              'Stop Level': df.Downtrend_Buy_Stop[-1].round(2),
+              'Limit Level': df.lower_channel[-1].round(2),
+              'Reward/Risk': round((df.Close[-1] - df.lower_channel[-1])/(df.Downtrend_Buy_Stop[-1] - df.Close[-1]),2)
+          }
+      )
   
+  out_df = pd.DataFrame(d)
+  print(out_df)
+  out_df.to_csv('OUTPUT.csv', index = False)  
  
 
   
