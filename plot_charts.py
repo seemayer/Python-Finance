@@ -20,7 +20,7 @@ def triple_screen(symbol = 'GOOG'):
   
   ti.add_elder_impulse(dfwshade)
   dfwshade = dfwshade[['Open','Close','impulse']]
-  print(dfwshade)
+  # print(dfwshade)
   
   conditions = [
       (dfwshade.impulse.eq('green')), #green
@@ -29,26 +29,29 @@ def triple_screen(symbol = 'GOOG'):
       ]
   
   # create a list of the values we want to assign for each condition
-  open_values = [0, 0, 1000000]
-  close_values = [1000000,0, 0]
+  open_values = [0, 0, 1000000] #Green, Blue, Red
+  close_values = [1000000, 0, 0]
   
   # create a new column and use np.select to assign values to it using our lists as arguments
   dfwshade['Open'] = np.select(conditions, open_values)
   dfwshade['Close'] = np.select(conditions, close_values)
-  
+  # dfwshade.to_csv('Weekly.csv')
+  dfwshade = md.resample_daily(dfwshade)
+  # dfwshade.to_csv('Daily.csv')
+
   #Create plot with blue background and 2 windows
   fplt.odd_plot_background = '#87CEEB' # blue
   
-  ax,ax2 = fplt.create_plot('TITLE', rows=2, maximize=True)
+  ax,ax2 = fplt.create_plot(symbol, rows=2, maximize=True)
   
   hover_label = fplt.add_legend('', ax=ax)
   axo = ax.overlay()
   
   
   # plot down-sampled weekly candles first
-  weekly_plot = fplt.candlestick_ochl(dfwshade[['Open','Close']], candle_width=5)
+  weekly_plot = fplt.candlestick_ochl(dfwshade[['Open','Close']], candle_width=1)
   weekly_plot.colors.update(dict(bull_frame = '#ada', bull_body='#ada', bull_shadow='#ada', bear_body='#fbc', bear_frame='#fbc'))
-  weekly_plot.x_offset = 2.1 # resample() gets us start of day, offset +1.1 (gap+off center wick)
+  # weekly_plot.x_offset = 2.1 # resample() gets us start of day, offset +1.1 (gap+off center wick)
   
   # plot daily candles on top & 13 EMA
   fplt.candlestick_ochl(df[['Open','Close','High','Low']])
@@ -129,3 +132,5 @@ def screen_passed():
       plot_chart(name,'1d')
     except:
       print('unable to plot '+ name)
+
+triple_screen()

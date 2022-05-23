@@ -131,6 +131,17 @@ def df_from_csv(file_path):
     return df
 
 
+def resample_daily(df_weekly):
+
+    # resample to weekly candles, i.e. five 1-day candles per business week
+    df_daily = df_weekly.resample('D').ffill()
+
+    # df_daily = df_daily.dropna()
+
+    return df_daily
+
+
+
 def resample_weekly(df):
 
     # resample to weekly candles, i.e. five 1-day candles per business week
