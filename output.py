@@ -40,6 +40,7 @@ def channel_order_levels_short():
               'Order Level': df.Close[-1].round(2),
               'Stop Level': df.Downtrend_Buy_Stop[-1].round(2),
               'Limit Level': df.lower_channel[-1].round(2),
+              'Weekly Impulse': ti.add_weekly_elder_impulse(df).impulse[-1],
               'Reward/Risk': round((df.Close[-1] - df.lower_channel[-1])/(df.Downtrend_Buy_Stop[-1] - df.Close[-1]),2)
           }
       )

@@ -91,6 +91,16 @@ def add_elder_impulse(df, period=13):
     return df
 
 
+def add_weekly_elder_impulse(df_daily):
+
+    df_weekly = md.resample_weekly(df_daily)
+  
+    #calculate indicators for each ticker and add to dataframe
+    df_weekly = add_elder_impulse(df_weekly)
+    df = md.resample_daily(df_weekly)
+
+    return df
+
 def add_elder_bull_divergence(df, period=40):
 
     #requires macd columns to be added to df

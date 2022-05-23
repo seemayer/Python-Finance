@@ -7,10 +7,10 @@ import pandas as pd
 
 # CORE PROGRAM START
 
-# tickers = md.get_list_of_market_tickers('FTSE100')
+# tickers = md.get_list_of_market_tickers('SETS')
 # print(tickers)
 # md.reset_market_data(lst_tickers=['CCH.L','PHNX.L','BA.L','ASC.L'])
-# md.reset_market_data(lst_tickers=md.get_list_of_market_tickers('FTSE100'))
+# md.reset_market_data(lst_tickers=md.get_list_of_market_tickers('SETS'))
 # screens.elder_triple()
 # screens.channel_short()
 # md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
