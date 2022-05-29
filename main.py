@@ -7,17 +7,17 @@ import pandas as pd
 
 # CORE PROGRAM START
 
-# tickers = md.get_list_of_market_tickers('SETS')
+tickers = md.get_list_of_market_tickers('SETS')
 # print(tickers)
 # md.reset_market_data(lst_tickers=['CCH.L','PHNX.L','BA.L','ASC.L'])
-# md.reset_market_data(lst_tickers=md.get_list_of_market_tickers('SETS'))
+md.reset_market_data(lst_tickers=md.get_list_of_market_tickers('SETS'))
 # md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
 # screens.elder_triple()
 # screens.channel_short()
 # screens.weekly_impulse_not_equal('green')
 # screens.relative_strength(strongest=False)
 # output.order_levels()
-output.channel_order_levels_short()
+# output.channel_order_levels_short()
 # CORE PROGRAM END
 
 # md.download_sector_info()
