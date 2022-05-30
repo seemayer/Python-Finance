@@ -163,7 +163,8 @@ def channel_short():
     #delete files that do not pass the screen
     if not(screenpassed):
       os.unlink(file.path)
-
+  
+  print('channel_short screen complete')
 
 if __name__ == "__main__":
   # stuff only to run when not called via 'import' here
