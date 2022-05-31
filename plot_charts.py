@@ -120,7 +120,12 @@ def get_data_and_plot_chart(symbol = 'GOOG',end = datetime.strftime(datetime.tod
                   end=end,
                   start=start)
 
- 
+
+  
+  df = df.reset_index()
+  df['Date'] = pd.to_datetime(df['Date']).view('int64') # convert from object to use finplot's internal representation, which is ns
+  df = df.set_index('Date')
+
   ax,ax2 = fplt.create_plot(symbol, rows=2)
 
   # plot macd with standard colors first
@@ -140,21 +145,22 @@ def get_data_and_plot_chart(symbol = 'GOOG',end = datetime.strftime(datetime.tod
   #######################################################
   ## update crosshair and legend when moving the mouse ##
   
-  # def update_legend_text(x, y):
-  #     row = df.loc[df.index==x]
-  #     # format html with the candle and set legend
-  #     fmt = '<span style="color:#%s">%%.2f</span>' % ('0b0' if (row.Open<row.Close).all() else 'a00')
-  #     rawtxt = '<span style="font-size:13px">%%s %%s</span> &nbsp; O%s C%s H%s L%s' % (fmt, fmt, fmt, fmt)
-  #     hover_label.setText(rawtxt % (symbol, interval.upper(), row.Open, row.Close, row.High, row.Low))
+  def update_legend_text(x, y):
+    # pass
+    row = df.loc[df.index==x]
+    # format html with the candle and set legend
+    fmt = '<span style="color:#%s">%%.2f</span>' % ('0b0' if (row.Open<row.Close).all() else 'a00')
+    rawtxt = '<span style="font-size:13px">%%s %%s</span> &nbsp; O%s C%s H%s L%s' % (fmt, fmt, fmt, fmt)
+    hover_label.setText(rawtxt % (symbol, interval.upper(), row.Open, row.Close, row.High, row.Low))
+
+  def update_crosshair_text(x, y, xtext, ytext):
+      ytext = '%s (Close%+.2f)' % (ytext, (y - df.iloc[x].Close))
+      return xtext, ytext
   
-  # def update_crosshair_text(x, y, xtext, ytext):
-  #     ytext = '%s (Close%+.2f)' % (ytext, (y - df.iloc[x].Close))
-  #     return xtext, ytext
+  fplt.set_time_inspector(update_legend_text, ax=ax, when='hover')
+  fplt.add_crosshair_info(update_crosshair_text, ax=ax)
   
-  # fplt.set_time_inspector(update_legend_text, ax=ax, when='hover')
-  # fplt.add_crosshair_info(update_crosshair_text, ax=ax)
   
-  # fplt.plot(df['marker'], ax=ax, color='#4a5', style='^', legend='dumb mark')
 
   fplt.show()
 
