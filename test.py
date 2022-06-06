@@ -1,31 +1,18 @@
+#!/usr/bin/env python3
+
 import finplot as fplt
 import yfinance as yf
-import market_data as md
-import os
-import config
-from pathlib import Path
+import datetime
 
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+df = yf.download('888.L', period='5y',interval='1d')
 
-end = datetime.strftime(datetime.today(),'%Y-%m-%d')
-print(end)
-exit()
+xmin = datetime.datetime.strptime('2021-06-01', "%Y-%m-%d").timestamp()
+xmax = datetime.datetime.strptime('2021-06-12', "%Y-%m-%d").timestamp()
 
-end = datetime.strptime(end,'%Y-%m-%d')
-start = end - relativedelta(years=1)
+ax = fplt.create_plot('Things move', init_zoom_periods=1)
+fplt.candlestick_ochl(df[['Open','Close','High','Low']], ax=ax)
 
-end = datetime.strftime(end,'%Y-%m-%d')
-start = datetime.strftime(start,'%Y-%m-%d')
+fplt.set_x_pos(xmin, xmax, ax=ax)
 
-print(start,end)
-
-df = yf.download('GOOG',
-                interval='1d',
-                end=end,
-                start=start)
-
-
-  
-
+fplt.show()
 

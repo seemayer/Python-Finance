@@ -1,3 +1,4 @@
+import config
 import finplot as fplt
 import pandas as pd
 import yfinance as yf
@@ -164,11 +165,9 @@ def get_data_and_plot_chart(symbol = 'GOOG',end = datetime.strftime(datetime.tod
 
   fplt.show()
 
-
-
 def plot_chart(symbol, interval):
 
-  df = pd.read_csv('screen passed/' + symbol + '.csv')
+  df = pd.read_csv(config.DATA_DIR + symbol + '.csv')
   df['Date'] = pd.to_datetime(df['Date']).view('int64') # convert from object to use finplot's internal representation, which is ns
   df = df.set_index('Date')
   
