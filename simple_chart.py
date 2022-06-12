@@ -81,6 +81,13 @@ def add_force_index():
     ti.add_force_index(df)
     fplt.volume_ocv(df[['Open','Close','force_index']], ax=ax2, colorfunc=fplt.strength_colorfilter)
 
+def add_hline(value):
+    fplt.add_line((df.index[1],value), (df.index[-1], value), color='#9900ff')
+
+def add_vline(date):
+    date = pd.to_datetime(date)
+    fplt.add_line((date, 0), (date, 1000000), color='#9900ff')
+
 def plot():
 
     global ax,ax2,df
@@ -94,7 +101,7 @@ def plot():
     # create two axes
     ax,ax2 = fplt.create_plot(symbol, rows=2)
 
-    add_weekly_impulse()
+    # add_weekly_impulse()
 
     add_candles()
     add_volume()
@@ -105,6 +112,9 @@ def plot():
     add_exponential_moving_average(10)
 
     add_marker('2022-06-10', 260)
+
+    add_hline(300)
+    add_vline('2022-03-15')
 
     add_macd()
     # add_force_index(df)
