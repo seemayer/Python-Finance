@@ -221,7 +221,9 @@ def screen_passed():
 
 if __name__ == "__main__":
   # stuff only to run when not called via 'import' here
-  get_data_and_plot_chart()
+  # get_data_and_plot_chart()
   # screen_passed()
-  # triple_screen()
+  md.save_stock_data_to_dir(['TW.L'],config.DATA_DIR)
+  triple_screen('.\data\TW.L.csv')
   # plot_chart('888.L','1d')
+  

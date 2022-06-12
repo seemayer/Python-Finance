@@ -40,7 +40,7 @@ def get_stock_data(ticker, interval=config.INTERVAL, period=config.PERIOD):
                          start=config.START,
                          end=config.END)
         print('start end')
-
+    
     return df
 
 
@@ -117,19 +117,21 @@ def save_stock_data_to_dir(lst_tickers, directory_name):
             print("unable to pull data for " + ticker)
 
 
-def reset_market_data(directory_name=config.DATA_DIR, lst_tickers=['GOOG', 'MSFT']):
+def reset_market_data(directory_name=config.DATA_DIR, lst_tickers=['VOD.L', '888.L']):
     delete_files_in_dir(directory_name)
     save_stock_data_to_dir(lst_tickers, directory_name)
     print(f'Successfully downloaded market data and saved to {directory_name}')
 
 
 def df_from_csv(file_path):
-    # when writing and reading back from csv the index is converted to an object type so need to convert back to datetime64 if to be used with finplot
+    # pull some data - when writing and reading back from csv the index is converted to an object type so need to convert back to datetime64 if to be used with finplot
     df = pd.read_csv(file_path)
-    df['Date'] = pd.to_datetime(df['Date'])
+    
+    # format it in pandas
+    df = df.astype({'Date':'datetime64[ns]'})
     df = df.set_index('Date')
+    # print(f'Dataframe:\n{df}\ndf datatypes:\n{df.dtypes}')
     return df
-
 
 def resample_daily(df_weekly):
 
@@ -165,6 +167,9 @@ def filter_files_in_dir(directory_name, filter_list):
 
 if __name__ == "__main__":
     # stuff only to run when not called via 'import' here
-    reset_market_data(directory_name='./data/', market='FTSE100')
+    reset_market_data()
+    # df = df_from_csv(config.DATA_DIR + '888.L.csv')
+    # print(df.dtypes)
+
 
 #Populate the data folder with stock data based on a list of tickers
