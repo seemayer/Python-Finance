@@ -45,8 +45,6 @@ df = md.df_from_csv('./shares and dates.csv')
 
 for date,row in df.iterrows():
 
-    
-
     date = datetime.datetime.strftime(date,'%Y-%m-%d')
 
     try:

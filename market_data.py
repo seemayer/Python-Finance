@@ -6,8 +6,24 @@ import pandas as pd
 import yfinance as yf
 from yahoo_fin import stock_info as si
 import shutil
+import requests
 
+## Naked Trades ##
+def download_naked_trades():
+    # https://stackoverflow.com/questions/10556048/how-to-extract-tables-from-websites-in-python
+    url = 'https://www.nakedtrader.co.uk/agree.htm?agree=1'
+    html = requests.get(url).content
+    df_list = pd.read_html(html)
 
+    df_Shares=df_list[0]
+    df_Spread_Longs=df_list[1]
+    df_Spread_Shorts=df_list[2]
+
+    df_Shares.to_csv('./naked trades/Shares.csv', index=False)
+    df_Spread_Longs.to_csv('./naked trades/Spread_Longs.csv', index=False)
+    df_Spread_Shorts.to_csv('./naked trades/Spread_Shorts.csv', index=False)
+
+## Handle Files ##
 def delete_files_in_dir(directory_name):  # Delete all files in a directory
     for file in os.scandir(directory_name):
         os.unlink(file.path)
@@ -27,7 +43,24 @@ def del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DI
     except:
         print('unable to copy over data')
 
+def save_stock_data_to_dir(lst_tickers, directory_name):
+    #Populate the data folder with stock data based on a list of tickers
+    for ticker in lst_tickers:
 
+        try:
+            print(ticker)
+            df = get_stock_data(ticker)
+            df.to_csv(directory_name + ticker + ".csv")
+        except:
+            print("unable to pull data for " + ticker)
+
+def filter_files_in_dir(directory_name, filter_list):
+    for file in os.scandir(directory_name):
+        # print(file.name, file.path)
+        if file.name not in filter_list:
+            os.unlink(file.path)
+
+## Get Data ##
 def get_stock_data(ticker, interval=config.INTERVAL, period=config.PERIOD):
     # download data from yahoo
     if config.START == None or config.END == None:
@@ -43,6 +76,15 @@ def get_stock_data(ticker, interval=config.INTERVAL, period=config.PERIOD):
     
     return df
 
+def df_from_csv(file_path):
+    # pull some data - when writing and reading back from csv the index is converted to an object type so need to convert back to datetime64 if to be used with finplot
+    df = pd.read_csv(file_path)
+    
+    # format it in pandas
+    df = df.astype({'Date':'datetime64[ns]'})
+    df = df.set_index('Date')
+    # print(f'Dataframe:\n{df}\ndf datatypes:\n{df.dtypes}')
+    return df
 
 def download_SETS_tickers():
 
@@ -65,7 +107,6 @@ def download_SETS_tickers():
 
     return lst_tickers
 
-
 def get_investment_trust_codes():
 
     MY_EXCEL_URL = "https://docs.londonstockexchange.com/sites/default/files/reports/Instrument%20list_23.xlsx"
@@ -81,7 +122,6 @@ def get_investment_trust_codes():
     lst_IT_ISIN = xl_df['ISIN'].to_list()
 
     return lst_IT_ISIN
-
 
 def get_list_of_market_tickers(market):  # Download list of market tickers
 
@@ -105,33 +145,7 @@ def get_list_of_market_tickers(market):  # Download list of market tickers
 
     return lst_tickers
 
-
-def save_stock_data_to_dir(lst_tickers, directory_name):
-    for ticker in lst_tickers:
-
-        try:
-            print(ticker)
-            df = get_stock_data(ticker)
-            df.to_csv(directory_name + ticker + ".csv")
-        except:
-            print("unable to pull data for " + ticker)
-
-
-def reset_market_data(directory_name=config.DATA_DIR, lst_tickers=['VOD.L', '888.L']):
-    delete_files_in_dir(directory_name)
-    save_stock_data_to_dir(lst_tickers, directory_name)
-    print(f'Successfully downloaded market data and saved to {directory_name}')
-
-
-def df_from_csv(file_path):
-    # pull some data - when writing and reading back from csv the index is converted to an object type so need to convert back to datetime64 if to be used with finplot
-    df = pd.read_csv(file_path)
-    
-    # format it in pandas
-    df = df.astype({'Date':'datetime64[ns]'})
-    df = df.set_index('Date')
-    # print(f'Dataframe:\n{df}\ndf datatypes:\n{df.dtypes}')
-    return df
+## Resample Data ##
 
 def resample_daily(df_weekly):
 
@@ -141,8 +155,6 @@ def resample_daily(df_weekly):
     # df_daily = df_daily.dropna()
 
     return df_daily
-
-
 
 def resample_weekly(df):
 
@@ -157,19 +169,17 @@ def resample_weekly(df):
 
     return dfw
 
+## Routines ##
 
-def filter_files_in_dir(directory_name, filter_list):
-    for file in os.scandir(directory_name):
-        # print(file.name, file.path)
-        if file.name not in filter_list:
-            os.unlink(file.path)
-
+def reset_market_data(directory_name=config.DATA_DIR, lst_tickers=['VOD.L', '888.L']):
+    delete_files_in_dir(directory_name)
+    save_stock_data_to_dir(lst_tickers, directory_name)
+    print(f'Successfully downloaded market data and saved to {directory_name}')
 
 if __name__ == "__main__":
     # stuff only to run when not called via 'import' here
     reset_market_data()
-    # df = df_from_csv(config.DATA_DIR + '888.L.csv')
-    # print(df.dtypes)
+    
 
 
-#Populate the data folder with stock data based on a list of tickers
+
