@@ -31,8 +31,10 @@ for i in unique:
         # print(index)
         if index>df_stock_data.index[0]: #only plot if in date range
             myplt.add_marker(df_stock_data,date = index,value=row.Price)
+            myplt.add_hline(df_stock_data,start_date = index, length=50, value=row.Stop, color='red')
+            myplt.add_hline(df_stock_data,start_date = index, length=50, value=row.Target, color='green')
             if not pd.isnull(row['Sell Date']):
-                myplt.add_marker(df_stock_data,date = row['Sell Date'],value=row.Sell, color='green', name='Sell')
+                myplt.add_marker(df_stock_data,date = row['Sell Date'],value=row.Sell, color='yellow', name='Sell')
         
     myplt.show()
 
