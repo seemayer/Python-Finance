@@ -95,7 +95,7 @@ class myplot():
 
         if start_date != None:
             i2 = df.index.get_loc(start_date)
-            i1 = max(i2 - length,0)
+            i1 = min(max(i2 + length,0),len(df.index)-1)
         else:
             i2 = -1
             i1 = 0
