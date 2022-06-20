@@ -8,12 +8,17 @@ import pandas as pd
 df = md.df_from_csv('./naked trades/Shares.csv')
 
 #clean up any incorrect tickers
-df =  df.replace({'Epic':{'T17':'TM17'}})
+df =  df.replace({'Epic':{'T17':'TM17','BA.':'BA'}})
 
 df['Sell Date'] = pd.to_datetime(df['Sell Date'], format='%d/%m/%Y', errors='coerce') #ensure UK date format , '%d/%m/%Y'
 
 unique = df['Epic'].unique()
 # print(unique)
+
+for i in unique:
+    md.get_stock_data(i+'.L')
+
+exit()
 
 for i in unique:
     
