@@ -138,7 +138,7 @@ def add_elder_bull_divergence(main_df, period=40):
 
     return df
 
-def avg_true_range(main_df, period=22):
+def add_avg_true_range(main_df, period=22):
     df = main_df.copy()
     df['tr1'] = df["High"] - df["Low"]
     df['tr2'] = abs(df["High"] - df["Close"].shift(1))
@@ -218,7 +218,7 @@ def average_downside_penetration(main_df, FastEMAPeriod=13):
 
 def chandelier_exit_long(main_df, period=22):  # default period is 22
     df = main_df.copy()
-    df = avg_true_range(df)
+    df = add_avg_true_range(df)
 
     df['rolling_high'] = df['High'].rolling(min_periods=period,
                                             window=period,
@@ -230,7 +230,7 @@ def chandelier_exit_long(main_df, period=22):  # default period is 22
 
 def chandelier_exit_short(main_df, period=22):  # default period is 22
     df = main_df.copy()
-    df = avg_true_range(df)
+    df = add_avg_true_range(df)
 
     df['rolling_low'] = df['Low'].rolling(min_periods=period,
                                           window=period,
@@ -259,7 +259,7 @@ def test():
     df = add_elder_impulse(df)
     df = add_weekly_elder_impulse(df)
     df = add_elder_bull_divergence(df)
-    df = avg_true_range(df)
+    df = add_avg_true_range(df)
     df = add_auto_envelope(df)
     df = add_safe_zone_stops(df)
 

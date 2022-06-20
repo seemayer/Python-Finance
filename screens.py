@@ -153,7 +153,7 @@ def channel_short():
     df = ti.add_ema(df,period=26) #Long term value
     df = ti.add_ema(df,period=13) #Short term value
 
-    df['screen_passed'] = df.Close > df['26EMA']
+    df['screen_passed'] = df.Close > df['EMA-26']
   
     #check last 3 days to see if screen was passed
     screenpassed = any(df.screen_passed.tail(3))
