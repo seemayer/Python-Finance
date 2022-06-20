@@ -78,6 +78,7 @@ def add_weekly_impulse(main_df):
   #Create plot with blue background and 2 windows
   
   ax.vb.setBackgroundColor('#87CEEB')
+  print(df_weekly)
 
   # plot weekly candles first
   weekly_plot = fplt.candlestick_ochl(df_weekly[['Open','Close']], candle_width=1)
@@ -117,9 +118,15 @@ def plot_specific_dates(start_date='2021-05-01', end_date='2021-07-25'):
     fplt.set_x_pos(xmin, xmax, ax=ax)
 
 ## plot examples ##
-def plot(main_df, symbol):
+def plot(main_df, symbol, start_date=None, end_date=None):
+    
     df = main_df.copy()
 
+    if start_date is None:
+      start_date = df.index[0].strftime('%Y-%m-%d')
+    if end_date is None:
+      end_date = df.index[-1].strftime('%Y-%m-%d')
+    
     global ax,ax2
     ax,ax2 = fplt.create_plot(symbol, rows=2,init_zoom_periods=1)
     # hover_label = fplt.add_legend('', ax=ax)
@@ -142,7 +149,7 @@ def plot(main_df, symbol):
     add_macd(df)
     add_force_index(df)
 
-    plot_specific_dates()
+    plot_specific_dates(start_date, end_date)
 
     # we're done
     fplt.show()
@@ -204,8 +211,8 @@ if __name__ == "__main__":
     df = yf.download(symbol, interval=interval, period=period)
     # df = md.df_from_csv(filepath)
 
-    # # triple_screen(df)
-    plot(df,symbol)
+    triple_screen(df,symbol='test')
+    # plot(df,symbol)
     # screen_passed()
     
     # test()

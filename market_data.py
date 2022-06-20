@@ -19,6 +19,8 @@ def download_naked_trades():
     df_Spread_Longs=df_list[1]
     df_Spread_Shorts=df_list[2]
 
+    df_Shares.rename(columns={'Buy Date':'Date'}, inplace=True)
+
     df_Shares.to_csv('./naked trades/Shares.csv', index=False)
     df_Spread_Longs.to_csv('./naked trades/Spread_Longs.csv', index=False)
     df_Spread_Shorts.to_csv('./naked trades/Spread_Shorts.csv', index=False)
@@ -79,6 +81,7 @@ def get_stock_data(ticker, interval=config.INTERVAL, period=config.PERIOD):
 def df_from_csv(file_path):
     # pull some data - when writing and reading back from csv the index is converted to an object type so need to convert back to datetime64 if to be used with finplot
     df = pd.read_csv(file_path)
+    df.Date = pd.to_datetime(df.Date, format='%d/%m/%Y') #ensure UK date format
     
     # format it in pandas
     df = df.astype({'Date':'datetime64[ns]'})

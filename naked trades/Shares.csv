@@ -1,4 +1,4 @@
-Stock,Epic,Qty,Price,Target,Stop,Buy Date,Sell,Sell Date,P/L
+Stock,Epic,Qty,Price,Target,Stop,Date,Sell,Sell Date,P/L
 I Energiser,IBPO,500,390.0,450,320,08/06/2022,,,
 Photo-Me,PHTM,5000,76.5,88,65,07/06/2022,,,
 Argentex,AGFX,5000,75.3,85,66,30/05/2022,,,

@@ -1,9 +1,20 @@
-from selenium import webdriver
+import pandas as pd
 
-browser= webdriver.Firefox()
+def df_from_csv(file_path):
+    # pull some data - when writing and reading back from csv the index is converted to an object type so need to convert back to datetime64 if to be used with finplot
+    df = pd.read_csv(file_path)
+    df.Date = pd.to_datetime(df.Date, format='%d/%m/%Y')
 
-browser.get('https://www.nakedtrader.co.uk/trades/agree.htm?agree=1')
+    # format it in pandas
+    df = df.astype({'Date':'datetime64[ns]'})
+    df = df.set_index('Date')
+    # print(f'Dataframe:\n{df}\ndf datatypes:\n{df.dtypes}')
+    return df
 
-new_releases= browser.find_element_by_link_text('.agree.htm?agree=1')
 
-new_releases.click()
+# md.download_naked_trades()
+df = df_from_csv('./naked trades/Shares.csv')
+
+
+
+print(df)
