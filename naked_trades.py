@@ -7,18 +7,7 @@ import pandas as pd
 
 df = md.df_from_csv('./naked trades/Shares.csv')
 
-#clean up any incorrect tickers
-df =  df.replace({'Epic':{'T17':'TM17','BA.':'BA'}})
-
-df['Sell Date'] = pd.to_datetime(df['Sell Date'], format='%d/%m/%Y', errors='coerce') #ensure UK date format , '%d/%m/%Y'
-
 unique = df['Epic'].unique()
-# print(unique)
-
-for i in unique:
-    md.get_stock_data(i+'.L')
-
-exit()
 
 for i in unique:
     
@@ -30,16 +19,22 @@ for i in unique:
     myplt.create(symbol)
     df_stock_data = md.get_stock_data(symbol,period='5y')
     myplt.add_candles(df_stock_data)
+    myplt.add_volume(df_stock_data)
     myplt.add_macd(df_stock_data)
 
+    buy_legend_flag = True
+    sell_legend_flag = True
     for index,row in newdf.iterrows():
+        
         # print(index)
         if index>df_stock_data.index[0]: #only plot if in date range
-            myplt.add_marker(df_stock_data,date = index,value=row.Price)
-            myplt.add_hline(df_stock_data,start_date = index, length=50, value=row.Stop, color='red')
-            myplt.add_hline(df_stock_data,start_date = index, length=50, value=row.Target, color='green')
+            myplt.add_marker(df_stock_data,date = index,value=row.Price, color='blue', name=('Buy' if buy_legend_flag else None))
+            myplt.add_hline(df_stock_data,start_date = index, length=50, value=row.Stop, color='red', width=2)
+            myplt.add_hline(df_stock_data,start_date = index, length=50, value=row.Target, color='green', width=2)
             if not pd.isnull(row['Sell Date']):
-                myplt.add_marker(df_stock_data,date = row['Sell Date'],value=row.Sell, color='yellow', name='Sell')
+                myplt.add_marker(df_stock_data,date = row['Sell Date'],value=row.Sell, color='yellow', name=('Sell' if sell_legend_flag else None))
+                sell_legend_flag = False
+            buy_legend_flag = False
         
     myplt.show()
 
