@@ -7,17 +7,36 @@ import pandas as pd
 
 # CORE PROGRAM START
 
-
-# tickers = md.get_list_of_market_tickers('SETS')
-# print(tickers)
+# refresh_core_data
+tickers = md.get_list_of_market_tickers('SETS')
 # md.reset_market_data(lst_tickers=['CCH.L','PHNX.L','BA.L','ASC.L'])
-# md.reset_market_data(lst_tickers=md.get_list_of_market_tickers('SETS'))
+md.reset_market_data(tickers)
+
+
+def short_downward_channel():
+    # Reset screen passed folder    
+    md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
+    # Weekly impulse must be red - tide
+    screens.weekly_impulse_not_equal('green')
+    screens.weekly_impulse_not_equal('blue')
+    # Upward wave so that close is above EMA-26
+    screens.channel_short() 
+    # Keep top 30% weakest performers
+    screens.relative_strength(strongest=False) 
+    
+def long_upward_channel():
+    # Reset screen passed folder    
+    md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
+    # Weekly impulse must be green - tide
+    screens.weekly_impulse_not_equal('red')
+    screens.weekly_impulse_not_equal('blue')
+    # Downward wave based on force index
+    screens.force_index(below_zero=True) 
+    # Keep top 30% strongest performers
+    screens.relative_strength(strongest=True) 
+
 # md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
 # screens.elder_triple()
-# screens.channel_short()
-# screens.weekly_impulse_not_equal('green')
-# screens.weekly_impulse_not_equal('blue')
-# screens.relative_strength(strongest=False)
 # output.order_levels()
 output.channel_order_levels_short()
 # CORE PROGRAM END

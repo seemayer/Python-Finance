@@ -141,7 +141,7 @@ def relative_strength(strongest = True, cutoff = .3):
 
 def channel_short():
 
-  md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
+  
 
   #Screen 1 - Weekly impulse
   for file in os.scandir(config.SCREEN_DIR):
