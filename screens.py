@@ -5,6 +5,42 @@ import technical_indicators as ti
 import market_data as md
 import yfinance as yf
 
+def relative_strength(strongest = True, cutoff = .3):
+  returns_multiples = []
+  tickers = []
+      
+  # Index Returns - (last close - first close)/first close
+  index_df = md.get_stock_data(ticker='^FTAS')
+  index_return = (index_df.Close[-1]-index_df.Close[0])/index_df.Close[0] + 1
+  # print(index_df, index_return)
+  
+  for file in os.scandir(config.SCREEN_DIR):
+    
+    tickers.extend([file.name[:-4]])
+  
+    # individual stock return
+    stock_df = md.df_from_csv(file.path)
+    stock_return = (stock_df.Close[-1]-stock_df.Close[0])/stock_df.Close[0] + 1
+  
+    # return relative to market
+    returns_multiple = round((stock_return / index_return), 2)
+    returns_multiples.extend([returns_multiple])
+      
+  #   print (f'Ticker: {file.name[:-4]}; Returns Multiple against FTSE All Share: {returns_multiple}')
+  
+  # Creating dataframe of only top\bottom 30%
+  rs_df = pd.DataFrame(list(zip(tickers, returns_multiples)), columns=['Ticker', 'Returns_multiple'])
+  rs_df['RS_Rating'] = rs_df.Returns_multiple.rank(ascending = strongest,pct=True) * 100
+  rs_df = rs_df[rs_df.RS_Rating >= rs_df.RS_Rating.quantile(.70)]
+  
+  print('Top\Bottom 30% relative strength: \n',rs_df)
+  
+  my_list = rs_df.Ticker.tolist()
+  my_list = [item + '.csv' for item in my_list] #add suffix
+  print(my_list)
+  
+  md.filter_files_in_dir(config.SCREEN_DIR, my_list)
+
 def weekly_impulse_not_equal(colour = 'red'):
 
   #Screen 1 - Weekly impulse
@@ -68,7 +104,7 @@ def elder_triple_bear():
   
   print('triple screen complete')
 
-def elder_divergence():
+def elder_divergence_bull():
 
   md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR) 
   # delete all files in screen passed folder
@@ -103,45 +139,7 @@ def elder_divergence():
   
   md.filter_files_in_dir(config.SCREEN_DIR,lst_screen_passed)
 
-def relative_strength(strongest = True, cutoff = .3):
-  returns_multiples = []
-  tickers = []
-      
-  # Index Returns - (last close - first close)/first close
-  index_df = md.get_stock_data(ticker='^FTAS')
-  index_return = (index_df.Close[-1]-index_df.Close[0])/index_df.Close[0] + 1
-  # print(index_df, index_return)
-  
-  for file in os.scandir(config.SCREEN_DIR):
-    
-    tickers.extend([file.name[:-4]])
-  
-    # individual stock return
-    stock_df = md.df_from_csv(file.path)
-    stock_return = (stock_df.Close[-1]-stock_df.Close[0])/stock_df.Close[0] + 1
-  
-    # return relative to market
-    returns_multiple = round((stock_return / index_return), 2)
-    returns_multiples.extend([returns_multiple])
-      
-  #   print (f'Ticker: {file.name[:-4]}; Returns Multiple against FTSE All Share: {returns_multiple}')
-  
-  # Creating dataframe of only top\bottom 30%
-  rs_df = pd.DataFrame(list(zip(tickers, returns_multiples)), columns=['Ticker', 'Returns_multiple'])
-  rs_df['RS_Rating'] = rs_df.Returns_multiple.rank(ascending = strongest,pct=True) * 100
-  rs_df = rs_df[rs_df.RS_Rating >= rs_df.RS_Rating.quantile(.70)]
-  
-  print('Top\Bottom 30% relative strength: \n',rs_df)
-  
-  my_list = rs_df.Ticker.tolist()
-  my_list = [item + '.csv' for item in my_list] #add suffix
-  print(my_list)
-  
-  md.filter_files_in_dir(config.SCREEN_DIR, my_list)
-
 def channel_short():
-
-  
 
   #Screen 1 - Weekly impulse
   for file in os.scandir(config.SCREEN_DIR):

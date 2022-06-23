@@ -8,11 +8,14 @@ import pandas as pd
 df = md.df_from_csv('./naked trades/Shares.csv')
 
 unique = df['Epic'].unique()
+print(unique)
+start_pos = 0
 
-for i in unique:
+for idi, i in enumerate(unique[start_pos:]):
     
     newdf = df[(df['Epic']==i)]
     print(newdf)
+    print(f'idi = {idi + start_pos}')
     symbol = i + '.L'
 
     myplt = plot.myplot()

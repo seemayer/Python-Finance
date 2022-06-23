@@ -10,7 +10,7 @@ import pprint as pp
 class myplot():
 
     def create(self, symbol='TEST', init_zoom_periods=1e10):
-        self.ax, self.ax2 = fplt.create_plot(symbol, rows=2, init_zoom_periods=init_zoom_periods)
+        self.ax, self.ax2, self.ax3 = fplt.create_plot(symbol, rows=3, init_zoom_periods=init_zoom_periods)
 
     def show(self):
         fplt.show()
@@ -25,7 +25,7 @@ class myplot():
         df = main_df.copy()
         # overlay volume on the top plot
         volumes = df[['Open','Close','Volume']]
-        fplt.volume_ocv(volumes, ax=self.ax.overlay())
+        fplt.volume_ocv(volumes, ax=self.ax3)
 
     def add_moving_average(self, main_df, period):
         df = main_df.copy()
@@ -163,17 +163,30 @@ def triple_screen_plot(df, symbol):
     plt.add_exponential_moving_average(df,13)
     plt.add_exponential_moving_average(df,26)
     plt.add_auto_envelope(df)
-    plt.add_force_index(df)
+    plt.add_macd(df)
+    # plt.add_force_index(df)
     plt.add_safe_zone_stops(df)
     plt.show()
 
-def standard_plot(df, symbol=None):
+def test_plot(df, symbol): 
+    plt = myplot()
+    plt.create(symbol=symbol)
+
+    # create a chart where background colours show weekly impulse and also plot daily candles and force index. To be used for Elder Triple Screen
+    plt.add_candles(df)
+    plt.add_volume(df)
+    plt.add_auto_envelope(df)
+    plt.add_moving_average(df, period=13)
+    plt.add_macd(df)
+    plt.show()
+
+def standard_plot(df, symbol):
     plt = myplot()
     plt.create(symbol=symbol)
     plt.add_candles(df)
     plt.add_volume(df)
     plt.add_moving_average(df, period=13)
-    plt.add_exponential_moving_average(df, period=200)
+    # plt.add_exponential_moving_average(df, period=200)
     plt.add_macd(df)
     plt.show() 
 
@@ -191,7 +204,8 @@ def screen_passed(plot_type=standard_plot):
 
 if __name__ == "__main__": 
 
-    screen_passed()
+    # screen_passed()
+    screen_passed(test_plot)
     # screen_passed(standard_plot)
     # screen_passed(triple_screen_plot)
     
