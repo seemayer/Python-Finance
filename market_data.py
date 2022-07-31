@@ -114,14 +114,25 @@ def download_SETS_tickers():
                           skiprows=3,
                           usecols='B:V')
     xl_df = xl_df.dropna()
-    xl_df = xl_df.query("`Currency` != 'USD'")  # remove listings in USD
+    xl_df = xl_df[xl_df['Currency'] != 'USD']  # remove listings in USD
 
     # Filter out investment trusts
     lst_IT = get_investment_trust_codes()
-    xl_df = xl_df.query("`ISIN` not in @lst_IT")
+    xl_df = xl_df[~xl_df['ISIN'].isin(lst_IT)]
+
+    # xl_df = xl_df.query("`ISIN` not in @lst_IT")
+
     # xl_df.to_csv('SETS.csv', index = False)
 
+    xl_df[['Mnemonic','ISIN','Issuer Name']].to_csv(config.FILTER_DIR + 'SETS tickers ex Inv Trusts.csv', index=False)
     lst_tickers = xl_df['Mnemonic'].to_list()
+
+    return lst_tickers
+
+def get_custom_tickers():
+
+    df = pd.read_csv(config.FILTER_DIR + 'Custom_Share_List.csv')
+    lst_tickers = df['Ticker'].to_list()
 
     return lst_tickers
 
@@ -134,9 +145,7 @@ def get_investment_trust_codes():
                           skiprows=7,
                           usecols='A:O')
 
-    xl_df = xl_df.query(
-        "`FCA Listing Category` == 'Premium Equity Closed Ended Investment Funds'"
-    )
+    xl_df = xl_df[xl_df['FCA Listing Category'] == 'Premium Equity Closed Ended Investment Funds']
     lst_IT_ISIN = xl_df['ISIN'].to_list()
 
     return lst_IT_ISIN
@@ -147,7 +156,8 @@ def get_list_of_market_tickers(market):  # Download list of market tickers
         'FTSE100': si.tickers_ftse100(),
         'FTSE250': si.tickers_ftse250(),
         'FTSE350': si.tickers_ftse100() + si.tickers_ftse250(),
-        'SETS': download_SETS_tickers()
+        'SETS': download_SETS_tickers(),
+        'CUSTOM': get_custom_tickers(),
     }
     lst_tickers = dict_markets[market]
     #remove periods from end

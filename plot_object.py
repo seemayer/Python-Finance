@@ -165,7 +165,7 @@ def triple_screen_plot(df, symbol):
     plt.add_auto_envelope(df)
     plt.add_macd(df)
     # plt.add_force_index(df)
-    plt.add_safe_zone_stops(df)
+    # plt.add_safe_zone_stops(df)
     plt.show()
 
 def test_plot(df, symbol): 
@@ -205,7 +205,7 @@ def screen_passed(plot_type=standard_plot):
 if __name__ == "__main__": 
 
     # screen_passed()
-    screen_passed(test_plot)
+    screen_passed(triple_screen_plot)
     # screen_passed(standard_plot)
     # screen_passed(triple_screen_plot)
     

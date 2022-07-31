@@ -1,7 +1,8 @@
 # Program settings
 
-DATA_DIR = './data/'
+DATA_DIR = './data/shares/'
 SCREEN_DIR = './screen passed/'
+FILTER_DIR = './data/filters/'
 
 INTERVAL = '1d'
 
@@ -9,4 +10,4 @@ INTERVAL = '1d'
 END = None  #'2021-05-20'
 START = None  #'2021-05-15'
 # Or
-PERIOD = '1y'  #'1y'
+PERIOD = '5y'  #'1y'

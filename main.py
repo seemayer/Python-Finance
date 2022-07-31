@@ -8,15 +8,16 @@ import pandas as pd
 # CORE PROGRAM START
 def update_data():
     # refresh_core_data
-    tickers = md.get_list_of_market_tickers('SETS')
+    tickers = md.get_list_of_market_tickers('CUSTOM')
     # md.reset_market_data(lst_tickers=['CCH.L','PHNX.L','BA.L','ASC.L'])
-    md.reset_market_data(tickers)
+    md.reset_market_data(lst_tickers = tickers)
 
-
-screens.elder_divergence_bull()
+# update_data()
+# md.get_list_of_market_tickers('CUSTOM')
+# screens.elder_divergence_bull()
 
 # md.del_dir_and_copy_files(src_dir = config.DATA_DIR, tar_dir = config.SCREEN_DIR)
-# screens.elder_triple()
+screens.elder_triple_bull()
 # output.order_levels()
 # CORE PROGRAM END
 

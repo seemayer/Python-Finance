@@ -7,6 +7,11 @@ import pandas as pd
 
 df = md.df_from_csv('./naked trades/Shares.csv')
 
+# filter on only SETS traded stocks
+SETS_tickers = md.get_list_of_market_tickers('SETS')
+SETS_tickers = [s.replace('.L','') for s in SETS_tickers]
+df = df[df['Epic'].isin(SETS_tickers)]
+
 unique = df['Epic'].unique()
 print(unique)
 start_pos = 0
